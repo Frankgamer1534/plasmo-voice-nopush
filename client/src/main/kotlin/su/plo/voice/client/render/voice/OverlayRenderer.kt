@@ -3,7 +3,7 @@ package su.plo.voice.client.render.voice
 import com.google.common.collect.Lists
 import com.google.common.collect.Maps
 import net.minecraft.client.Minecraft
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.StringDecomposer
 import su.plo.lib.mod.extensions.isHudHidden
 import su.plo.lib.mod.client.ResourceLocationUtil
@@ -232,7 +232,7 @@ class OverlayRenderer(
                 val minecraftPlayerNick = Minecraft.getInstance().connection
                     ?.getPlayerInfo(playerInfo.playerId)
                     ?.profile
-                    ?.name
+                    ?.name()
 
                 return (voicePlayerNick ?: minecraftPlayerNick)
                     ?.let { McTextComponent.literal(it) }
@@ -285,7 +285,7 @@ class OverlayRenderer(
 //            else -> ModPlayerSkins.getDefaultSkin(sourceInfo.id)
 //        }
 
-    private fun loadSkin(gameProfile: McGameProfile): ResourceLocation {
+    private fun loadSkin(gameProfile: McGameProfile): Identifier {
         ModPlayerSkins.loadSkin(gameProfile)
         return ModPlayerSkins.getSkin(gameProfile.id, gameProfile.name)
     }

@@ -2,7 +2,7 @@ package su.plo.voice.client.mixin;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import su.plo.voice.client.render.cape.DeveloperCapeManager;
 
-import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.world.entity.player.PlayerSkin;
 
 @Mixin(PlayerInfo.class)
 public abstract class MixinPlayerListEntry {
@@ -20,10 +20,10 @@ public abstract class MixinPlayerListEntry {
 
     @Inject(method = "getSkin", at = @At("RETURN"), cancellable = true)
     private void getSkin(CallbackInfoReturnable<PlayerSkin> cir) {
-        ResourceLocation cape = DeveloperCapeManager.INSTANCE.getCapeLocation(profile.getName());
+        Identifier cape = DeveloperCapeManager.INSTANCE.getCapeLocation(profile.name());
         if (cape == null) return;
         PlayerSkin skin = DeveloperCapeManager.INSTANCE.addCapeToSkin(
-                profile.getName(),
+                profile.name(),
                 cape,
                 cir.getReturnValue()
         );

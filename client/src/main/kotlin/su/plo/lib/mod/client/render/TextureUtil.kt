@@ -4,29 +4,29 @@ import com.google.common.base.Charsets
 import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.lwjgl.system.MemoryStack
 import java.nio.ByteBuffer
 import java.util.Base64
 
 fun registerBase64Texture(
     texture: String,
-    textureLocation: ResourceLocation,
-): ResourceLocation {
+    textureLocation: Identifier,
+): Identifier {
     // register base64 icon in minecraft resources
     Minecraft.getInstance().execute {
         Minecraft.getInstance().textureManager.register(
             textureLocation,
             DynamicTexture(
                 //#if MC>=12105
-                //$$ { textureLocation.toDebugFileName() },
+                { textureLocation.toDebugFileName() },
                 //#endif
                 getNativeImageFromBase64(texture)
             )
                 //#if MC<12111
-                .also { texture ->
-                    texture.setFilter(false, true)
-                }
+                //$$ .also { texture ->
+                //$$     texture.setFilter(false, true)
+                //$$ }
                 //#endif
         )
     }

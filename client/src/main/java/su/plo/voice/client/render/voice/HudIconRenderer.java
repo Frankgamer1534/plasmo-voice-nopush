@@ -3,7 +3,7 @@ package su.plo.voice.client.render.voice;
 import com.mojang.blaze3d.platform.Window;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.ResourceLocationUtil;
@@ -24,13 +24,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class HudIconRenderer implements HudRenderEvent.Callback {
 
-    private static final ResourceLocation MICROPHONE_DISCONNECTED_ICON =
+    private static final Identifier MICROPHONE_DISCONNECTED_ICON =
             ResourceLocationUtil.parse("plasmovoice:textures/icons/microphone_disconnected.png");
-    private static final ResourceLocation MICROPHONE_MUTED_ICON =
+    private static final Identifier MICROPHONE_MUTED_ICON =
             ResourceLocationUtil.parse("plasmovoice:textures/icons/microphone_muted.png");
-    private static final ResourceLocation MICROPHONE_DISABLED_ICON =
+    private static final Identifier MICROPHONE_DISABLED_ICON =
             ResourceLocationUtil.parse("plasmovoice:textures/icons/microphone_disabled.png");
-    private static final ResourceLocation SPEAKER_DISABLED_ICON =
+    private static final Identifier SPEAKER_DISABLED_ICON =
             ResourceLocationUtil.parse("plasmovoice:textures/icons/speaker_disabled.png");
 
     private final PlasmoVoiceClient voiceClient;
@@ -82,7 +82,7 @@ public final class HudIconRenderer implements HudRenderEvent.Callback {
         if (currentActivation != null) renderIcon(context, ResourceLocationUtil.parse(currentActivation.getIcon()));
     }
 
-    private void renderIcon(@NotNull GuiRenderContext context, @NotNull ResourceLocation iconLocation) {
+    private void renderIcon(@NotNull GuiRenderContext context, @NotNull Identifier iconLocation) {
         IconPosition iconPosition = config.getOverlay().getActivationIconPosition().value();
 
         int offsetY;

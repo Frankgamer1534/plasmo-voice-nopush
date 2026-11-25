@@ -4,7 +4,7 @@ import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.components.Button;
 import java.awt.Color;
@@ -14,8 +14,8 @@ public final class TabButton extends Button {
     private final boolean shadow;
     private final Color shadowColor;
 
-    private final ResourceLocation iconLocation;
-    private final ResourceLocation disabledIconLocation;
+    private final Identifier iconLocation;
+    private final Identifier disabledIconLocation;
 
     public TabButton(
             int x,
@@ -23,7 +23,7 @@ public final class TabButton extends Button {
             int width,
             int height,
             @NotNull McTextComponent text,
-            @NotNull ResourceLocation iconLocation,
+            @NotNull Identifier iconLocation,
             @NotNull OnPress pressAction,
             @NotNull OnTooltip tooltipAction,
             boolean shadow
@@ -36,7 +36,7 @@ public final class TabButton extends Button {
                      int width,
                      int height,
                      @NotNull McTextComponent text,
-                     @NotNull ResourceLocation iconLocation,
+                     @NotNull Identifier iconLocation,
                      @NotNull OnPress pressAction,
                      @NotNull OnTooltip tooltipAction,
                      boolean shadow,
@@ -72,7 +72,7 @@ public final class TabButton extends Button {
         );
     }
 
-    private ResourceLocation getIconLocation() {
+    private Identifier getIconLocation() {
         return active ? iconLocation : disabledIconLocation;
     }
 }

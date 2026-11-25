@@ -1,30 +1,30 @@
 package su.plo.lib.mod.client.render.level
 
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 //#if MC>=1.21.11
-//$$ import com.google.common.collect.Maps
-//$$ import net.minecraft.client.renderer.state.LevelRenderState
-//$$
+import com.google.common.collect.Maps
+import net.minecraft.client.renderer.state.level.LevelRenderState
+
 //#if FABRIC
-//$$ import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey
-//$$
-//$$ private val renderStateKeys: MutableMap<Identifier, RenderStateDataKey<Any>> = Maps.newConcurrentMap()
-//$$
-//$$ class LevelRenderStateHolder(
-//$$     val state: LevelRenderState,
-//$$ ) {
-//$$     fun set(key: Identifier, value: Any) {
-//$$         state.setData(
-//$$             renderStateKeys.getOrPut(key) { RenderStateDataKey.create() },
-//$$             value,
-//$$         )
-//$$     }
-//$$
-//$$     @Suppress("UNCHECKED_CAST")
-//$$     fun <T> get(key: Identifier): T? =
-//$$         state.getData(renderStateKeys.getOrPut(key) { RenderStateDataKey.create() }) as T?
-//$$ }
+import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey
+
+private val renderStateKeys: MutableMap<Identifier, RenderStateDataKey<Any>> = Maps.newConcurrentMap()
+
+class LevelRenderStateHolder(
+    val state: LevelRenderState,
+) {
+    fun set(key: Identifier, value: Any) {
+        state.setData(
+            renderStateKeys.getOrPut(key) { RenderStateDataKey.create() },
+            value,
+        )
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> get(key: Identifier): T? =
+        state.getData(renderStateKeys.getOrPut(key) { RenderStateDataKey.create() }) as T?
+}
 //#elseif NEOFORGE
 //$$ import net.minecraft.util.context.ContextKey
 //$$
@@ -45,17 +45,17 @@ import net.minecraft.resources.ResourceLocation
 //$$         state.getRenderData(renderStateKeys.getOrPut(key) { ContextKey(key) }) as T?
 //$$ }
 //#endif
-//$$
+
 //#else
-class LevelRenderStateHolder {
-    private val states: MutableMap<ResourceLocation, Any> = HashMap()
-
-    fun set(key: ResourceLocation, value: Any) {
-        states[key] = value
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T> get(key: ResourceLocation): T? =
-        states[key] as? T
-}
+//$$ class LevelRenderStateHolder {
+//$$     private val states: MutableMap<ResourceLocation, Any> = HashMap()
+//$$
+//$$     fun set(key: ResourceLocation, value: Any) {
+//$$         states[key] = value
+//$$     }
+//$$
+//$$     @Suppress("UNCHECKED_CAST")
+//$$     fun <T> get(key: ResourceLocation): T? =
+//$$         states[key] as? T
+//$$ }
 //#endif

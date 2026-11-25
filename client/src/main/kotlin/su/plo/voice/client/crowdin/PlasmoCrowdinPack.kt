@@ -1,7 +1,7 @@
 package su.plo.voice.client.crowdin
 
 import com.google.common.collect.ImmutableSet
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.packs.PackResources
 import net.minecraft.server.packs.PackType
 import java.io.File
@@ -15,9 +15,9 @@ import net.minecraft.network.chat.Component
 import java.util.Optional
 
 //#if MC>=12104
-//$$ import net.minecraft.server.packs.metadata.MetadataSectionType
+import net.minecraft.server.packs.metadata.MetadataSectionType
 //#else
-import net.minecraft.server.packs.metadata.MetadataSectionSerializer
+//$$ import net.minecraft.server.packs.metadata.MetadataSectionSerializer
 //#endif
 
 class PlasmoCrowdinPack(
@@ -31,7 +31,7 @@ class PlasmoCrowdinPack(
             .takeIf { it.exists() }
             ?.let { IoSupplier.create(it.toPath()) }
 
-    override fun getResource(packType: PackType, resourceLocation: ResourceLocation): IoSupplier<InputStream>? {
+    override fun getResource(packType: PackType, resourceLocation: Identifier): IoSupplier<InputStream>? {
         if (resourceLocation.namespace != "plasmovoice") return null
         if (!resourceLocation.path.startsWith("lang/")) return null
         return getRootResource(resourceLocation.path.substringAfter("lang/"))
@@ -55,9 +55,9 @@ class PlasmoCrowdinPack(
     override fun getNamespaces(packType: PackType): Set<String> = NAMESPACES
 
     //#if MC>=12104
-    //$$ override fun <T : Any> getMetadataSection(metadataSectionType: MetadataSectionType<T>): T? = null
+    override fun <T : Any> getMetadataSection(metadataSectionType: MetadataSectionType<T>): T? = null
     //#else
-    override fun <T : Any?> getMetadataSection(metadataSectionSerializer: MetadataSectionSerializer<T>): T? = null
+    //$$ override fun <T : Any?> getMetadataSection(metadataSectionSerializer: MetadataSectionSerializer<T>): T? = null
     //#endif
 
     override fun packId() = "Plasmo Crowdin resource pack"

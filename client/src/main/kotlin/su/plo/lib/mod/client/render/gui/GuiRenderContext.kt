@@ -1,10 +1,10 @@
 package su.plo.lib.mod.client.render.gui
 
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.locale.Language
 import net.minecraft.network.chat.FormattedText
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.FormattedCharSequence
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture
 import su.plo.lib.mod.client.render.Colors
@@ -17,33 +17,33 @@ import su.plo.voice.client.mixin.accessor.GuiGraphicsAccessor
 import java.awt.Color
 
 //#if MC>=12109
-//$$ import com.mojang.blaze3d.platform.cursor.CursorType
+import com.mojang.blaze3d.platform.cursor.CursorType
 //#endif
 
 //#if MC>=12106
-//$$ import org.joml.Matrix3x2fStack
+import org.joml.Matrix3x2fStack
 //#else
-import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.gui.Font
-import net.minecraft.client.renderer.LightTexture
-import net.minecraft.client.renderer.MultiBufferSource
+//$$ import com.mojang.blaze3d.vertex.PoseStack
+//$$ import net.minecraft.client.gui.Font
+//$$ import net.minecraft.client.renderer.LightTexture
+//$$ import net.minecraft.client.renderer.MultiBufferSource
 //#endif
 
 //#if MC<1.21.2
-import com.mojang.blaze3d.systems.RenderSystem
+//$$ import com.mojang.blaze3d.systems.RenderSystem
 //#endif
 
 private const val ICON_SHADOW_BRIGHTNESS = 0.25
 
 class GuiRenderContext(
-    val mcContext: GuiGraphics,
+    val mcContext: GuiGraphicsExtractor,
 ) {
     //#if MC>=12106
-    //$$ val stack: Matrix3x2fStack
-    //$$     get() = mcContext.pose()
-    //#else
-    val stack: PoseStack
+    val stack: Matrix3x2fStack
         get() = mcContext.pose()
+    //#else
+    //$$ val stack: PoseStack
+    //$$     get() = mcContext.pose()
     //#endif
 
     private val scissorStack: ArrayDeque<ScissorState> = ArrayDeque()
@@ -56,15 +56,15 @@ class GuiRenderContext(
         }
 
         //#if MC>=12106
-        //$$ if (state != null) {
-        //$$ // I don't understand why, but mojang subtracts x and y from width and height respectively
-        //$$     mcContext.enableScissor(state.x, state.y, state.width + state.x, state.height + state.y)
-        //$$ } else {
-        //$$     mcContext.disableScissor()
-        //$$ }
+        if (state != null) {
+        // I don't understand why, but mojang subtracts x and y from width and height respectively
+            mcContext.enableScissor(state.x, state.y, state.width + state.x, state.height + state.y)
+        } else {
+            mcContext.disableScissor()
+        }
         //#else
-        mcContext.flush()
-        ScissorState.applyScissorState(scissorStack.lastOrNull())
+        //$$ mcContext.flush()
+        //$$ ScissorState.applyScissorState(scissorStack.lastOrNull())
         //#endif
     }
 
@@ -73,7 +73,7 @@ class GuiRenderContext(
 
     fun flush() {
         //#if MC>=12106
-        //$$ mcContext.nextStratum();
+        mcContext.nextStratum();
         //#elseif MC>=12102
         //$$ mcContext.flush();
         //#endif
@@ -81,7 +81,7 @@ class GuiRenderContext(
 
     @JvmOverloads
     fun blit(
-        textureLocation: ResourceLocation,
+        textureLocation: Identifier,
         x: Int,
         y: Int,
         u: Float,
@@ -110,7 +110,7 @@ class GuiRenderContext(
 
     @JvmOverloads
     fun blit(
-        textureLocation: ResourceLocation,
+        textureLocation: Identifier,
         x: Int,
         y: Int,
         width: Int,
@@ -139,7 +139,7 @@ class GuiRenderContext(
 
     @JvmOverloads
     fun blitUv(
-        textureLocation: ResourceLocation,
+        textureLocation: Identifier,
         x0: Int,
         x1: Int,
         y0: Int,
@@ -153,36 +153,36 @@ class GuiRenderContext(
     ) {
         val accessor = mcContext as GuiGraphicsAccessor
         //#if MC>=1.21.2
-        //$$ accessor.plasmovoice_innerBlit(pipeline.mc, textureLocation, x0, x1, y0, y1, u0, u1, v0, v1, color.rgb)
+        accessor.plasmovoice_innerBlit(pipeline.mc, textureLocation, x0, x1, y0, y1, u0, u1, v0, v1, color.rgb)
         //#else
-        val renderType = pipeline.mc?.apply(textureLocation)
-        if (renderType != null) {
-            val pose = stack.last().pose()
-            val buffer = mcContext.bufferSource().getBuffer(renderType)
-
-            buffer.addVertex(pose, x0.toFloat(), y0.toFloat(), 0f).setUv(u0, v0).setColor(color.rgb)
-            buffer.addVertex(pose, x0.toFloat(), y1.toFloat(), 0f).setUv(u0, v1).setColor(color.rgb)
-            buffer.addVertex(pose, x1.toFloat(), y1.toFloat(), 0f).setUv(u1, v1).setColor(color.rgb)
-            buffer.addVertex(pose, x1.toFloat(), y0.toFloat(), 0f).setUv(u1, v0).setColor(color.rgb)
-
-            mcContext.bufferSource().endBatch(renderType)
-            return
-        }
-
-        if (!pipeline.depthTest) RenderSystem.disableDepthTest()
-        accessor.plasmovoice_innerBlit(
-            textureLocation,
-            x0, x1, y0, y1, 0,
-            u0, u1, v0, v1,
-            color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f,
-        )
-        if (!pipeline.depthTest) RenderSystem.enableDepthTest()
+        //$$ val renderType = pipeline.mc?.apply(textureLocation)
+        //$$ if (renderType != null) {
+        //$$     val pose = stack.last().pose()
+        //$$     val buffer = mcContext.bufferSource().getBuffer(renderType)
+        //$$
+        //$$     buffer.addVertex(pose, x0.toFloat(), y0.toFloat(), 0f).setUv(u0, v0).setColor(color.rgb)
+        //$$     buffer.addVertex(pose, x0.toFloat(), y1.toFloat(), 0f).setUv(u0, v1).setColor(color.rgb)
+        //$$     buffer.addVertex(pose, x1.toFloat(), y1.toFloat(), 0f).setUv(u1, v1).setColor(color.rgb)
+        //$$     buffer.addVertex(pose, x1.toFloat(), y0.toFloat(), 0f).setUv(u1, v0).setColor(color.rgb)
+        //$$
+        //$$     mcContext.bufferSource().endBatch(renderType)
+        //$$     return
+        //$$ }
+        //$$
+        //$$ if (!pipeline.depthTest) RenderSystem.disableDepthTest()
+        //$$ accessor.plasmovoice_innerBlit(
+        //$$     textureLocation,
+        //$$     x0, x1, y0, y1, 0,
+        //$$     u0, u1, v0, v1,
+        //$$     color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f,
+        //$$ )
+        //$$ if (!pipeline.depthTest) RenderSystem.enableDepthTest()
         //#endif
     }
 
     @JvmOverloads
     fun blitIcon(
-        icon: ResourceLocation,
+        icon: Identifier,
         x: Int,
         y: Int,
         width: Int,
@@ -216,11 +216,11 @@ class GuiRenderContext(
         height: Int,
     ) {
         //#if MC>=1.21.2
-        //$$ mcContext.blitSprite(GuiPipelines.TEXTURE.mc, sprite.location, x, y, width, height)
+        mcContext.blitSprite(GuiPipelines.TEXTURE.mc, sprite.location, x, y, width, height)
         //#else
-        RenderSystem.enableBlend()
-        mcContext.blitSprite(sprite.location, x, y, width, height)
-        RenderSystem.disableBlend()
+        //$$ RenderSystem.enableBlend()
+        //$$ mcContext.blitSprite(sprite.location, x, y, width, height)
+        //$$ RenderSystem.disableBlend()
         //#endif
     }
 
@@ -245,26 +245,26 @@ class GuiRenderContext(
     ): Int {
         val font = Minecraft.getInstance().font
         //#if MC>=12106
-        //$$ mcContext.drawString(font, text, x, y, color.rgb, dropShadow)
+        mcContext.text(font, text, x, y, color.rgb, dropShadow)
         //#else
-        if (seeThrough) {
-            drawSeeThrough { bufferSource ->
-                font.drawInBatch(
-                    text,
-                    x.toFloat(),
-                    y.toFloat(),
-                    color.rgb,
-                    dropShadow,
-                    stack.last().pose(),
-                    bufferSource,
-                    Font.DisplayMode.SEE_THROUGH,
-                    0,
-                    LightTexture.FULL_BRIGHT,
-                )
-            }
-        } else {
-            mcContext.drawString(font, text, x, y, color.rgb, dropShadow)
-        }
+        //$$ if (seeThrough) {
+        //$$     drawSeeThrough { bufferSource ->
+        //$$         font.drawInBatch(
+        //$$             text,
+        //$$             x.toFloat(),
+        //$$             y.toFloat(),
+        //$$             color.rgb,
+        //$$             dropShadow,
+        //$$             stack.last().pose(),
+        //$$             bufferSource,
+        //$$             Font.DisplayMode.SEE_THROUGH,
+        //$$             0,
+        //$$             LightTexture.FULL_BRIGHT,
+        //$$         )
+        //$$     }
+        //$$ } else {
+        //$$     mcContext.drawString(font, text, x, y, color.rgb, dropShadow)
+        //$$ }
         //#endif
 
         return RenderUtil.getStringX(text, x, dropShadow)
@@ -440,25 +440,25 @@ class GuiRenderContext(
     }
 
     //#if MC>=12109
-    //$$ fun requestCursor(cursorType: CursorType) {
-    //$$     mcContext.requestCursor(cursorType)
-    //$$ }
+    fun requestCursor(cursorType: CursorType) {
+        mcContext.requestCursor(cursorType)
+    }
     //#endif
 
     fun requestCursor(cursor: GuiCursor) {
         //#if MC>=12109
-        //$$ mcContext.requestCursor(cursor.mc())
+        mcContext.requestCursor(cursor.mc())
         //#endif
     }
 
     //#if MC<1.21.6
-    private fun drawSeeThrough(draw: (MultiBufferSource) -> Unit) {
+    //$$ private fun drawSeeThrough(draw: (MultiBufferSource) -> Unit) {
         //#if MC>=1.21.2
         //$$ mcContext.drawSpecial { draw(it) }
         //#else
-        draw(mcContext.bufferSource())
-        mcContext.flush()
+        //$$ draw(mcContext.bufferSource())
+        //$$ mcContext.flush()
         //#endif
-    }
+    //$$ }
     //#endif
 }

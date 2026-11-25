@@ -1,6 +1,6 @@
 package su.plo.voice.client.gui.settings.widget
 
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import su.plo.config.entry.ConfigEntry
 import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.gui.components.Button
@@ -92,6 +92,6 @@ open class OptionWidget<W : GuiAbstractWidget> @JvmOverloads constructor(
     private companion object {
         const val GAP = 4
 
-        val RESET_ICON: ResourceLocation = ResourceLocationUtil.parse("plasmovoice:textures/icons/reset.png")
+        val RESET_ICON: Identifier = ResourceLocationUtil.parse("plasmovoice:textures/icons/reset.png")
     }
 }

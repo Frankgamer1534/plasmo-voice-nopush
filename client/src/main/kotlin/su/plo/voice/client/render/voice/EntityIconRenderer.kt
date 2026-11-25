@@ -3,7 +3,7 @@ package su.plo.voice.client.render.voice
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.Minecraft
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import su.plo.lib.mod.client.render.Colors
 import su.plo.lib.mod.client.render.Colors.withAlpha
 import su.plo.lib.mod.client.render.RenderUtil
@@ -12,15 +12,15 @@ import su.plo.lib.mod.client.render.entity.EntityRenderState
 import su.plo.lib.mod.client.render.submitTexturedGeometry
 
 //#if MC<1.21.11
-import su.plo.lib.mod.extensions.rotate
+//$$ import su.plo.lib.mod.extensions.rotate
 //#endif
 
 //#if MC>=12103
-//$$ import net.minecraft.client.renderer.LightTexture
+import net.minecraft.util.LightCoordsUtil
 //#endif
 
 //#if MC>=26.3
-//$$ import net.minecraft.util.ARGB
+import net.minecraft.util.ARGB
 //#endif
 
 object EntityIconRenderer {
@@ -52,9 +52,9 @@ object EntityIconRenderer {
         val xOffset = -RenderUtil.getTextWidth(text) / 2
 
         //#if MC>=1.21.3
-        //$$ val lightWithEmission = LightTexture.lightCoordsWithEmission(entityState.light, 2)
+        val lightWithEmission = LightCoordsUtil.lightCoordsWithEmission(entityState.light, 2)
         //#else
-        val lightWithEmission = entityState.light
+        //$$ val lightWithEmission = entityState.light
         //#endif
 
         context.submitText(
@@ -81,11 +81,11 @@ object EntityIconRenderer {
 
     private fun percentTextColor(): Int =
         //#if MC>=26.3
-        //$$ ARGB.white(maxOf((Minecraft.getInstance().options.getBackgroundOpacity(0.25f) + 0.75f) * 0.5f, 0.5f))
+        ARGB.white(maxOf((Minecraft.getInstance().options.getBackgroundOpacity(0.25f) + 0.75f) * 0.5f, 0.5f))
         //#elseif MC>=1.21.3
         //$$ Colors.WHITE.withAlpha(0.5f).rgb
         //#else
-        Colors.WHITE.withAlpha(0.13f).rgb
+        //$$ Colors.WHITE.withAlpha(0.13f).rgb
         //#endif
 
     private fun renderIcon(
@@ -106,9 +106,9 @@ object EntityIconRenderer {
             vertices(context, 40, entityState.light, iconLocation, false)
         } else {
             //#if MC>=1.21.3
-            //$$ val lightWithEmission = LightTexture.lightCoordsWithEmission(entityState.light, 2)
+            val lightWithEmission = LightCoordsUtil.lightCoordsWithEmission(entityState.light, 2)
             //#else
-            val lightWithEmission = entityState.light
+            //$$ val lightWithEmission = entityState.light
             //#endif
 
             vertices(context, 40, entityState.light, iconLocation, true)
@@ -137,12 +137,12 @@ object EntityIconRenderer {
         stack.translate(nameTagAttachment.x(), nameTagAttachment.y() + 0.5, nameTagAttachment.z())
 
         //#if MC>=1.21.11
-        //$$ stack.mulPose(context.camera.orientation)
-        //$$ stack.scale(0.025f, -0.025f, 0.025f)
+        stack.rotate(context.camera.orientation)
+        stack.scale(0.025f, -0.025f, 0.025f)
         //#else
-        stack.rotate(-context.camera.yRot, 0f, 1f, 0f)
-        stack.rotate(context.camera.xRot, 1f, 0f, 0f)
-        stack.scale(-0.025f, -0.025f, 0.025f)
+        //$$ stack.rotate(-context.camera.yRot, 0f, 1f, 0f)
+        //$$ stack.rotate(context.camera.xRot, 1f, 0f, 0f)
+        //$$ stack.scale(-0.025f, -0.025f, 0.025f)
         //#endif
 
         stack.translate(0.0, -1.0, 0.0)
@@ -152,7 +152,7 @@ object EntityIconRenderer {
         context: EntityIconRenderContext,
         alpha: Int,
         light: Int,
-        iconLocation: ResourceLocation,
+        iconLocation: Identifier,
         seeThrough: Boolean,
     ) {
         context.submitTexturedGeometry(iconLocation, seeThrough) { pose, buffer ->

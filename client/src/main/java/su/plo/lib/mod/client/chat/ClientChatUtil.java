@@ -13,15 +13,15 @@ public class ClientChatUtil {
 
     public static void setActionBar(@NonNull Component component) {
         //#if MC>=26.2
-        //$$ Minecraft.getInstance().gui.hud.setOverlayMessage(
-        //$$         component,
-        //$$         false
-        //$$ );
-        //#else
-        Minecraft.getInstance().gui.setOverlayMessage(
+        Minecraft.getInstance().gui.hud.setOverlayMessage(
                 component,
                 false
         );
+        //#else
+        //$$ Minecraft.getInstance().gui.setOverlayMessage(
+        //$$         component,
+        //$$         false
+        //$$ );
         //#endif
     }
 
@@ -38,11 +38,11 @@ public class ClientChatUtil {
 
         Minecraft.getInstance().execute(() -> {
             //#if MC>=26.1
-            //$$ player.sendSystemMessage(message);
+            player.sendSystemMessage(message);
             //#elseif MC>=12102
             //$$ player.displayClientMessage(message, false);
             //#else
-            player.sendSystemMessage(message);
+            //$$ player.sendSystemMessage(message);
             //#endif
         });
     }

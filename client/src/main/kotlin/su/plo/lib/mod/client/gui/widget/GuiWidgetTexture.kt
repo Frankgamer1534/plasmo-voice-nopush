@@ -1,10 +1,10 @@
 package su.plo.lib.mod.client.gui.widget
 
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import su.plo.lib.mod.client.ResourceLocationUtil
 
 enum class GuiWidgetTexture(
-    val location: ResourceLocation,
+    val location: Identifier,
 ) {
     BUTTON_DISABLED(ResourceLocationUtil.parse("widget/button_disabled")),
     BUTTON_DEFAULT(ResourceLocationUtil.parse("widget/button")),

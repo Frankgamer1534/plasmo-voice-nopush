@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 
 //#if MC>=26.3
-//$$ import com.mojang.blaze3d.platform.TextInputManager;
+import com.mojang.blaze3d.platform.TextInputManager;
 //#endif
 
 public class TextFieldWidget extends GuiAbstractWidget {
@@ -214,14 +214,14 @@ public class TextFieldWidget extends GuiAbstractWidget {
         if (focused) this.frame = 0;
 
         //#if MC>=26.3
-        //$$ if (!isEditable()) return;
-        //$$
-        //$$ TextInputManager textInputManager = Minecraft.getInstance().textInputManager();
-        //$$ if (focused) {
-        //$$     textInputManager.startTextInput(this);
-        //$$ } else {
-        //$$     textInputManager.stopTextInput(this);
-        //$$ }
+        if (!isEditable()) return;
+
+        TextInputManager textInputManager = Minecraft.getInstance().textInputManager();
+        if (focused) {
+            textInputManager.startTextInput(this);
+        } else {
+            textInputManager.stopTextInput(this);
+        }
         //#endif
     }
 
@@ -271,11 +271,11 @@ public class TextFieldWidget extends GuiAbstractWidget {
         }
 
         //#if MC>=26.3
-        //$$ if (canConsumeInput()) {
-        //$$     Minecraft.getInstance()
-        //$$             .textInputManager()
-        //$$             .setTextInputArea(selectionX, textY - 1, selectionX + 1, textY + 1 + 9);
-        //$$ }
+        if (canConsumeInput()) {
+            Minecraft.getInstance()
+                    .textInputManager()
+                    .setTextInputArea(selectionX, textY - 1, selectionX + 1, textY + 1 + 9);
+        }
         //#endif
 
         if (selectionEnd != cursorIndex) {

@@ -79,9 +79,9 @@ public final class SoundOcclusion {
 
             BlockState state = world.getBlockState(prevSoundPos);
             //#if MC>=12102
-            //$$ boolean isSolid = state.isSolidRender();
+            boolean isSolid = state.isSolidRender();
             //#else
-            boolean isSolid = state.isSolidRender(world, prevSoundPos);
+            //$$ boolean isSolid = state.isSolidRender(world, prevSoundPos);
             //#endif
             VoxelShape collisionShape = state.getCollisionShape(world, prevSoundPos);
 

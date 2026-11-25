@@ -34,7 +34,7 @@ public abstract class HudPositionScreen<E extends Enum<E>> extends GuiScreen {
     public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         // background is rendered by default and there is no way override this behavior without mixins
         //#if MC<12106
-        screen.renderBackground(context);
+        //$$ screen.renderBackground(context);
         //#endif
         super.render(context, mouseX, mouseY, delta);
 

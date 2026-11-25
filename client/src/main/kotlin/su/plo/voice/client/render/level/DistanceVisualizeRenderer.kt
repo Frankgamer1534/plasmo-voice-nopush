@@ -10,9 +10,9 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 //#if MC>=1.21.11
-//$$ import net.minecraft.client.renderer.rendertype.RenderTypes
+import net.minecraft.client.renderer.rendertype.RenderTypes
 //#else
-import net.minecraft.client.renderer.RenderType
+//$$ import net.minecraft.client.renderer.RenderType
 //#endif
 
 private const val SPHERE_STACK = 18
@@ -45,9 +45,9 @@ class DistanceVisualizeRenderer : LevelRenderEvent.Callback {
         )
 
         //#if MC>=1.21.11
-        //$$ val renderType = RenderTypes.debugQuads()
+        val renderType = RenderTypes.debugQuads()
         //#else
-        val renderType = RenderType.debugQuads()
+        //$$ val renderType = RenderType.debugQuads()
         //#endif
 
         context.submitGeometry(renderType) { pose, buffer ->

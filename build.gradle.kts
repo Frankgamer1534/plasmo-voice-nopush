@@ -1,45 +1,22 @@
-import gg.essential.gradle.util.setJvmDefault
-import org.gradle.kotlin.dsl.invoke
-import org.gradle.kotlin.dsl.test
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 // Version
-val targetJavaVersion: String by rootProject
+val targetJavaVersion: String = project.property("targetJavaVersion").toString()
 
 plugins {
     java
     idea
-    alias(libs.plugins.dokka)
-    alias(libs.plugins.grgit)
-    alias(libs.plugins.crowdin) apply(false)
 
     kotlin("jvm") version(libs.versions.kotlin.get())
     kotlin("plugin.lombok") version(libs.versions.kotlin.get())
     kotlin("kapt") version(libs.versions.kotlin.get())
-    kotlin("multiplatform") version(libs.versions.kotlin.get()) apply(false)
-    kotlin("plugin.serialization") version(libs.versions.kotlin.get()) apply(false)
-
-    id("gg.essential.multi-version.root") apply(false)
-
-    alias(ft.plugins.relocate) apply(false)
-}
-
-if (properties.containsKey("snapshot")) {
-    val gitCommitHash = grgit.head().abbreviatedId.substring(0, 7)
-    version = "${version.toString().substringBefore("-")}+$gitCommitHash-SNAPSHOT"
+    kotlin("plugin.serialization") version(libs.versions.kotlin.get()) apply false
 }
 
 subprojects {
-    if (project.buildFile.name.equals("root.gradle.kts")) return@subprojects
-
-    if (project.path.startsWith(":macos")) {
-        group = "${rootProject.group}.mac"
-        version = rootProject.version
-        return@subprojects
-    }
-
     apply(plugin = "java")
     apply(plugin = "idea")
-    apply(plugin = "maven-publish")
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-lombok")
 
@@ -88,28 +65,11 @@ subprojects {
         processResources {
             filteringCharset = Charsets.UTF_8.name()
         }
-
-        compileKotlin {
-            setJvmDefault("all")
-        }
-    }
-}
-
-dependencies {
-    dokka(project(":api"))
-    dokka(project(":protocol"))
-    dokkaHtmlPlugin("org.jetbrains.dokka:versioning-plugin")
-    testImplementation(kotlin("test"))
-}
-
-dokka {
-    if (properties.containsKey("snapshot")) {
-        moduleVersion.set("${version.toString().substringBefore("+")}-SNAPSHOT")
     }
 
-    pluginsConfiguration {
-        versioning {
-            olderVersionsDir.set(projectDir.resolve("previousDocVersions"))
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            jvmDefault.set(JvmDefaultMode.ENABLE)
         }
     }
 }
@@ -121,11 +81,23 @@ allprojects {
 
         maven("https://repo.plasmoverse.com/snapshots")
         maven("https://repo.plasmoverse.com/releases")
-        maven("https://repo.plasmoverse.com/prs")
-        maven("https://oss.sonatype.org/content/repositories/snapshots")
-        maven("https://repo.papermc.io/repository/maven-public/")
-        maven("https://jitpack.io/")
-        maven("https://maven.neoforged.net/releases")
+        maven("https://maven.fabricmc.net/")
+        maven("https://maven.shedaniel.me/")
+        maven("https://maven.nucleoid.xyz/")
+
+        maven("https://repo.maven.apache.org/maven2/") {
+            name = "MavenCentralLWJGL"
+            content { includeGroup("org.lwjgl") }
+        }
+
+        exclusiveContent {
+            forRepository {
+                maven("https://api.modrinth.com/maven")
+            }
+            filter {
+                includeGroup("maven.modrinth")
+            }
+        }
     }
 }
 
@@ -134,9 +106,7 @@ tasks {
         enabled = false
     }
 }
-repositories {
-    mavenCentral()
-}
+
 kapt {
     keepJavacAnnotationProcessors = true
 }

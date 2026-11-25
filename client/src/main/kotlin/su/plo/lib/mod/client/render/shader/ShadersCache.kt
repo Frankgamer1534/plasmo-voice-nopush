@@ -1,8 +1,8 @@
 package su.plo.lib.mod.client.render.shader
 
 //#if MC<1.21.5
-import net.minecraft.client.renderer.ShaderInstance
-import net.minecraft.resources.ResourceLocation
+//$$ import net.minecraft.client.renderer.CompiledShaderProgram
+//$$ import net.minecraft.resources.ResourceLocation
 //#endif
 
 //#if MC>=1.21.2 && MC<1.21.5
@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation
 
 object ShadersCache {
     //#if MC<1.21.5
-
+    //$$
     //#if MC>=1.21.2 && MC<1.21.5
     //$$ private val logger = BaseVoice.createLogger("ShadersCache")
     //$$ private val shaders: MutableMap<ResourceLocation, ShaderProgram> = HashMap()
@@ -33,22 +33,22 @@ object ShadersCache {
     //$$     }
     //$$ }
     //#else
-    private val shaders: MutableMap<ResourceLocation, ShaderInstance> = HashMap()
-
-    @JvmStatic
-    @Synchronized
-    fun get(location: ResourceLocation): ShaderInstance? = shaders[location]
+    //$$ private val shaders: MutableMap<ResourceLocation, ShaderInstance> = HashMap()
+    //$$
+    //$$ @JvmStatic
+    //$$ @Synchronized
+    //$$ fun get(location: ResourceLocation): ShaderInstance? = shaders[location]
     //#endif
-
-    @JvmStatic
-    @Synchronized
-    fun getOrThrow(location: ResourceLocation): ShaderInstance =
-        get(location) ?: error("Shader $location not available")
-
-    @JvmStatic
-    @Synchronized
-    fun isLoaded(location: ResourceLocation): Boolean = shaders.containsKey(location)
-
+    //$$
+    //$$ @JvmStatic
+    //$$ @Synchronized
+    //$$ fun getOrThrow(location: ResourceLocation): CompiledShaderProgram =
+    //$$     get(location) ?: error("Shader $location not available")
+    //$$
+    //$$ @JvmStatic
+    //$$ @Synchronized
+    //$$ fun isLoaded(location: ResourceLocation): Boolean = shaders.containsKey(location)
+    //$$
     //#if MC>=1.21.2 && MC<1.21.5
     //$$ @JvmStatic
     //$$ @Synchronized
@@ -56,15 +56,15 @@ object ShadersCache {
     //$$     shaders[location] = program
     //$$ }
     //#else
-    @JvmStatic
-    @Synchronized
-    fun put(
-        location: ResourceLocation,
-        shader: ShaderInstance,
-    ) {
-        shaders[location] = shader
-    }
+    //$$ @JvmStatic
+    //$$ @Synchronized
+    //$$ fun put(
+    //$$     location: ResourceLocation,
+    //$$     shader: ShaderInstance,
+    //$$ ) {
+    //$$     shaders[location] = shader
+    //$$ }
     //#endif
-
+    //$$
     //#endif
 }

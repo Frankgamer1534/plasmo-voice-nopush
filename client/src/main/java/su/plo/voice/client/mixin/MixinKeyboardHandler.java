@@ -13,8 +13,8 @@ import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.event.key.KeyPressedEvent;
 
 //#if MC>=12109
-//$$ import net.minecraft.client.input.KeyEvent;
-//$$ import org.jetbrains.annotations.NotNull;
+import net.minecraft.client.input.KeyEvent;
+import org.jetbrains.annotations.NotNull;
 //#endif
 
 @Mixin(KeyboardHandler.class)
@@ -25,28 +25,28 @@ public abstract class MixinKeyboardHandler {
     private Minecraft minecraft;
 
     //#if MC>=12109
-    //$$ @Inject(at = @At("RETURN"), method = "keyPress")
-    //$$ private void onKey(long window, int action, @NotNull KeyEvent keyEvent, CallbackInfo ci) {
-    //$$     if (window != this.minecraft.getWindow().handle() || ModVoiceClient.INSTANCE == null) return;
-    //$$
-    //$$     KeyPressedEvent event = new KeyPressedEvent(
-    //$$             Hotkey.Type.KEYSYM.getOrCreate(keyEvent.key()),
-    //$$             Hotkey.Action.fromInt(action)
-    //$$     );
-    //$$
-    //$$     ModVoiceClient.INSTANCE.getEventBus().fire(event);
-    //$$ }
-    //#else
     @Inject(at = @At("RETURN"), method = "keyPress")
-    private void onKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
-        if (window != this.minecraft.getWindow().getWindow() || ModVoiceClient.INSTANCE == null) return;
+    private void onKey(long window, int action, @NotNull KeyEvent keyEvent, CallbackInfo ci) {
+        if (window != this.minecraft.getWindow().handle() || ModVoiceClient.INSTANCE == null) return;
 
         KeyPressedEvent event = new KeyPressedEvent(
-                Hotkey.Type.KEYSYM.getOrCreate(key),
+                Hotkey.Type.KEYSYM.getOrCreate(keyEvent.key()),
                 Hotkey.Action.fromInt(action)
         );
 
         ModVoiceClient.INSTANCE.getEventBus().fire(event);
     }
+    //#else
+    //$$ @Inject(at = @At("RETURN"), method = "keyPress")
+    //$$ private void onKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
+    //$$     if (window != this.minecraft.getWindow().getWindow() || ModVoiceClient.INSTANCE == null) return;
+    //$$
+    //$$     KeyPressedEvent event = new KeyPressedEvent(
+    //$$             Hotkey.Type.KEYSYM.getOrCreate(key),
+    //$$             Hotkey.Action.fromInt(action)
+    //$$     );
+    //$$
+    //$$     ModVoiceClient.INSTANCE.getEventBus().fire(event);
+    //$$ }
     //#endif
 }

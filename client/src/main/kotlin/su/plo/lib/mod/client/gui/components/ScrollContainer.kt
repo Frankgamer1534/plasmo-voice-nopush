@@ -242,9 +242,9 @@ open class ScrollContainer(
         val parentScissor = context.getScissorState()
 
         //#if MC>=12106
-        //$$ var scissor = ScissorState.ofScaled(x, y, width, height)
+        var scissor = ScissorState.ofScaled(x, y, width, height)
         //#else
-        var scissor = ScissorState.of(x, Minecraft.getInstance().window.guiScaledHeight - (y + height), width, height)
+        //$$ var scissor = ScissorState.of(x, Minecraft.getInstance().window.guiScaledHeight - (y + height), width, height)
         //#endif
 
         if (parentScissor != null) {

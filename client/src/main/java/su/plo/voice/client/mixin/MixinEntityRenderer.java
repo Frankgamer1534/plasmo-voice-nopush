@@ -15,55 +15,55 @@ import su.plo.voice.client.render.voice.EntityIconRenderContext;
 import su.plo.voice.client.render.voice.EntityVoiceIconState;
 
 //#if MC>=12102
-//$$ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 //#else
-import su.plo.lib.mod.client.render.entity.EntityRenderStateKt;
+//$$ import su.plo.lib.mod.client.render.entity.EntityRenderStateKt;
 //#endif
 
 //#if MC>=12102
-//$$ import su.plo.voice.client.render.EntityRenderStateAccessor;
+import su.plo.voice.client.render.EntityRenderStateAccessor;
 //#endif
 
 //#if MC>=12109
-//$$ import net.minecraft.client.renderer.SubmitNodeCollector;
-//$$ import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 //#else
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+//$$ import net.minecraft.client.Minecraft;
+//$$ import net.minecraft.client.renderer.MultiBufferSource;
 //#endif
 
 @Mixin(EntityRenderer.class)
 public class MixinEntityRenderer {
     //#if MC>=12102
-    //$$ @Inject(method = "createRenderState(Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;", at = @At("RETURN"))
-    //$$ public void createRenderState(Entity entity, float f, CallbackInfoReturnable<net.minecraft.client.renderer.entity.state.EntityRenderState> cir) {
-    //$$     EntityVoiceIconState voiceIconState = EntityIconStateExtractor.extract(entity);
-    //$$
-    //$$     EntityRenderStateAccessor entityRenderStateAccessor = (EntityRenderStateAccessor) cir.getReturnValue();
-    //$$     entityRenderStateAccessor.plasmovoice_setEntityVoiceIcon(voiceIconState);
-    //$$ }
-    //$$
+    @Inject(method = "createRenderState(Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;", at = @At("RETURN"))
+    public void createRenderState(Entity entity, float f, CallbackInfoReturnable<net.minecraft.client.renderer.entity.state.EntityRenderState> cir) {
+        EntityVoiceIconState voiceIconState = EntityIconStateExtractor.extract(entity);
+
+        EntityRenderStateAccessor entityRenderStateAccessor = (EntityRenderStateAccessor) cir.getReturnValue();
+        entityRenderStateAccessor.plasmovoice_setEntityVoiceIcon(voiceIconState);
+    }
+
     //#if MC>=12109
-    //$$ @Inject(method = "submit", at = @At("RETURN"))
-    //$$ public void submit(
-    //$$         net.minecraft.client.renderer.entity.state.EntityRenderState mcEntityRenderState,
-    //$$         PoseStack poseStack,
-    //$$         SubmitNodeCollector submitNodeCollector,
-    //$$         CameraRenderState cameraRenderState,
-    //$$         CallbackInfo ci
-    //$$ ) {
-    //$$     if ((Object) this instanceof DisplayRenderer) return;
-    //$$
-    //$$     EntityRenderStateAccessor entityRenderStateAccessor = (EntityRenderStateAccessor) mcEntityRenderState;
-    //$$     EntityVoiceIconState voiceIconState = entityRenderStateAccessor.plasmovoice_getEntityVoiceIconState();
-    //$$
-    //$$     if (voiceIconState == null) return;
-    //$$
-    //$$     EntityRenderState entityRenderState = new EntityRenderState(mcEntityRenderState);
-    //$$
-    //$$     EntityIconRenderContext context = new EntityIconRenderContext(poseStack, cameraRenderState, submitNodeCollector);
-    //$$     EntityIconRenderer.render(entityRenderState, voiceIconState, context);
-    //$$ }
+    @Inject(method = "submit", at = @At("RETURN"))
+    public void submit(
+            net.minecraft.client.renderer.entity.state.EntityRenderState mcEntityRenderState,
+            PoseStack poseStack,
+            SubmitNodeCollector submitNodeCollector,
+            CameraRenderState cameraRenderState,
+            CallbackInfo ci
+    ) {
+        if ((Object) this instanceof DisplayRenderer) return;
+
+        EntityRenderStateAccessor entityRenderStateAccessor = (EntityRenderStateAccessor) mcEntityRenderState;
+        EntityVoiceIconState voiceIconState = entityRenderStateAccessor.plasmovoice_getEntityVoiceIconState();
+
+        if (voiceIconState == null) return;
+
+        EntityRenderState entityRenderState = new EntityRenderState(mcEntityRenderState);
+
+        EntityIconRenderContext context = new EntityIconRenderContext(poseStack, cameraRenderState, submitNodeCollector);
+        EntityIconRenderer.render(entityRenderState, voiceIconState, context);
+    }
     //#else
     //$$ @Inject(method = "render", at = @At("RETURN"))
     //$$ public void render(
@@ -86,31 +86,31 @@ public class MixinEntityRenderer {
     //$$     EntityIconRenderer.render(entityRenderState, voiceIconState, context);
     //$$ }
     //#endif
-    //$$
+
     //#else
-    @Inject(method = "render", at = @At("RETURN"))
-    public void render(
-            Entity entity,
-            float f,
-            float g,
-            PoseStack poseStack,
-            MultiBufferSource multiBufferSource,
-            int light,
-            CallbackInfo ci
-    ) {
-        if ((Object) this instanceof DisplayRenderer) return;
-
-        EntityVoiceIconState iconState = EntityIconStateExtractor.extract(entity);
-        if (iconState == null) return;
-
-        EntityRenderState entityRenderState = EntityRenderStateKt.createEntityRenderState(
-                (EntityRenderer<?>) ((Object) this),
-                entity,
-                light
-        );
-
-        EntityIconRenderContext context = new EntityIconRenderContext(poseStack, Minecraft.getInstance().gameRenderer.getMainCamera(), multiBufferSource);
-        EntityIconRenderer.render(entityRenderState, iconState, context);
-    }
+    //$$ @Inject(method = "render", at = @At("RETURN"))
+    //$$ public void render(
+    //$$         Entity entity,
+    //$$         float f,
+    //$$         float g,
+    //$$         PoseStack poseStack,
+    //$$         MultiBufferSource multiBufferSource,
+    //$$         int light,
+    //$$         CallbackInfo ci
+    //$$ ) {
+    //$$     if ((Object) this instanceof DisplayRenderer) return;
+    //$$
+    //$$     EntityVoiceIconState iconState = EntityIconStateExtractor.extract(entity);
+    //$$     if (iconState == null) return;
+    //$$
+    //$$     EntityRenderState entityRenderState = EntityRenderStateKt.createEntityRenderState(
+    //$$             (EntityRenderer<?>) ((Object) this),
+    //$$             entity,
+    //$$             light
+    //$$     );
+    //$$
+    //$$     EntityIconRenderContext context = new EntityIconRenderContext(poseStack, Minecraft.getInstance().gameRenderer.getMainCamera(), multiBufferSource);
+    //$$     EntityIconRenderer.render(entityRenderState, iconState, context);
+    //$$ }
     //#endif
 }

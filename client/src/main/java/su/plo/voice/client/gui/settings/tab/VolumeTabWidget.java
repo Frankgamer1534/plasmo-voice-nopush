@@ -3,7 +3,7 @@ package su.plo.voice.client.gui.settings.tab;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.ConfigEntry;
@@ -45,10 +45,10 @@ import java.util.stream.Collectors;
 
 public final class VolumeTabWidget extends TabWidget {
 
-    private static final ResourceLocation SHOW_ALL_ICON =
-        ResourceLocation.tryParse("plasmovoice:textures/icons/eye.png");
-    private static final ResourceLocation SHOW_RECENT_ICON =
-        ResourceLocation.tryParse(
+    private static final Identifier SHOW_ALL_ICON =
+        Identifier.tryParse("plasmovoice:textures/icons/eye.png");
+    private static final Identifier SHOW_RECENT_ICON =
+        Identifier.tryParse(
             "plasmovoice:textures/icons/eye_disabled.png"
         );
 
@@ -172,7 +172,7 @@ public final class VolumeTabWidget extends TabWidget {
 
         return new VolumeOption(
             iconLabel(
-                ResourceLocation.tryParse(sourceLine.getIcon()),
+                Identifier.tryParse(sourceLine.getIcon()),
                 McTextComponent.translatable(sourceLine.getTranslation())
             ),
             createVolumeSlider(volumeEntry),
@@ -385,7 +385,7 @@ public final class VolumeTabWidget extends TabWidget {
             20,
             buttonClick,
             Button.NO_TOOLTIP,
-            ResourceLocation.tryParse(
+            Identifier.tryParse(
                 "plasmovoice:textures/icons/speaker_menu.png"
             ),
             true
@@ -398,7 +398,7 @@ public final class VolumeTabWidget extends TabWidget {
             20,
             buttonClick,
             Button.NO_TOOLTIP,
-            ResourceLocation.tryParse(
+            Identifier.tryParse(
                 "plasmovoice:textures/icons/speaker_menu_disabled.png"
             ),
             true

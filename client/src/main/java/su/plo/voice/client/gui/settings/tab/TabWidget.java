@@ -17,7 +17,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -98,7 +98,7 @@ public abstract class TabWidget extends ScrollContainer {
         return page.add(new CompositeColumnWidget(ELEMENT_GAP));
     }
 
-    protected GuiAbstractWidget iconLabel(@NotNull ResourceLocation icon, @NotNull McTextComponent text) {
+    protected GuiAbstractWidget iconLabel(@NotNull Identifier icon, @NotNull McTextComponent text) {
         return new CompositeRowWidget(ELEMENT_GAP, new IconWidget(icon), new TextWidget(text));
     }
 

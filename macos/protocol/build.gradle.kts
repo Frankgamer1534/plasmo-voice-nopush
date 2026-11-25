@@ -1,25 +1,11 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    kotlin("multiplatform")
+    kotlin("jvm")
     kotlin("plugin.serialization")
 }
 
-kotlin {
-    jvm {
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
-    }
+group = "$group.mac"
 
-    macosX64()
-    macosArm64()
-
-    applyDefaultHierarchyTemplate()
-    sourceSets["commonMain"].apply {
-        kotlin.setSrcDirs(listOf("src/main/kotlin"))
-        dependencies {
-            api(libs.kotlinx.msgpack)
-            api(libs.kotlinx.io)
-        }
-    }
-    sourceSets["jvmMain"].kotlin.setSrcDirs(listOf("src/jvm/kotlin"))
+dependencies {
+    api(libs.kotlinx.msgpack)
+    api(libs.kotlinx.io)
 }

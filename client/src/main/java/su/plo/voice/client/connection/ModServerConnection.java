@@ -118,7 +118,7 @@ public final class ModServerConnection implements ServerConnection {
         // because Minecraft.getInstance().getConnection() can be null and a packet will not be sent
 
         ByteArrayCodec codec = ModChannelManager.Companion.getOrRegisterCodec(ModVoiceServer.CHANNEL);
-        connection.send(ClientPlayNetworking.createC2SPacket(new ByteArrayPayload(codec.getType(), encoded)));
+        connection.send(ClientPlayNetworking.createServerboundPacket(new ByteArrayPayload(codec.getType(), encoded)));
 
         //#elseif NEOFORGE
         //$$
@@ -466,15 +466,15 @@ public final class ModServerConnection implements ServerConnection {
     @Override
     public void handle(@NotNull AnimatedActionBarPacket packet) {
         //#if MC>=26.2
-        //$$ Minecraft.getInstance().gui.hud.setOverlayMessage(
-        //$$         RenderUtil.getTextConverter().convertFromJson(packet.getJsonComponent()),
-        //$$         true
-        //$$ );
-        //#else
-        Minecraft.getInstance().gui.setOverlayMessage(
+        Minecraft.getInstance().gui.hud.setOverlayMessage(
                 RenderUtil.getTextConverter().convertFromJson(packet.getJsonComponent()),
                 true
         );
+        //#else
+        //$$ Minecraft.getInstance().gui.setOverlayMessage(
+        //$$         RenderUtil.getTextConverter().convertFromJson(packet.getJsonComponent()),
+        //$$         true
+        //$$ );
         //#endif
     }
 

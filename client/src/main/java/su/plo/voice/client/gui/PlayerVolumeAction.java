@@ -101,9 +101,9 @@ public final class PlayerVolumeAction {
             BlockState state = level.getBlockState(blockPos);
 
             //#if MC>=12102
-            //$$ boolean isSolid = state.isSolidRender();
+            boolean isSolid = state.isSolidRender();
             //#else
-            boolean isSolid = state.isSolidRender(level, blockPos);
+            //$$ boolean isSolid = state.isSolidRender(level, blockPos);
             //#endif
             if (!state.isAir() && isSolid) {
                 break;

@@ -9,7 +9,7 @@ import su.plo.voice.client.event.LevelRenderEvent
 import su.plo.voice.client.extension.position
 
 //#if MC<1.21.11
-import su.plo.lib.mod.extensions.rotate
+//$$ import su.plo.lib.mod.extensions.rotate
 //#endif
 
 class StaticSourceIconRenderer : LevelRenderEvent.Callback {
@@ -39,12 +39,12 @@ class StaticSourceIconRenderer : LevelRenderEvent.Callback {
         )
 
         //#if MC>=1.21.11
-        //$$ stack.mulPose(context.camera.orientation)
-        //$$ stack.scale(0.025f, -0.025f, 0.025f)
+        stack.rotate(context.camera.orientation)
+        stack.scale(0.025f, -0.025f, 0.025f)
         //#else
-        stack.rotate(-context.camera.yRot, 0f, 1f, 0f)
-        stack.rotate(context.camera.xRot, 1f, 0f, 0f)
-        stack.scale(-0.025f, -0.025f, 0.025f)
+        //$$ stack.rotate(-context.camera.yRot, 0f, 1f, 0f)
+        //$$ stack.rotate(context.camera.xRot, 1f, 0f, 0f)
+        //$$ stack.scale(-0.025f, -0.025f, 0.025f)
         //#endif
 
         stack.translate(-5.0, -5.0, 0.0)

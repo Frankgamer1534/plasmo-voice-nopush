@@ -5,22 +5,22 @@ import net.minecraft.client.gui.screens.Screen
 
 fun Minecraft.currentScreen(): Screen? =
     //#if MC>=26.2
-    //$$ this.gui.screen()
+    this.gui.screen()
     //#else
-    this.screen
+    //$$ this.screen
     //#endif
 
 fun Minecraft.setCurrentScreen(screen: Screen?) {
     //#if MC>=26.2
-    //$$ this.gui.setScreen(screen)
+    this.gui.setScreen(screen)
     //#else
-    this.setScreen(screen)
+    //$$ this.setScreen(screen)
     //#endif
 }
 
 fun Minecraft.isHudHidden(): Boolean =
     //#if MC>=26.2
-    //$$ this.gui.hud.isHidden
+    this.gui.hud.isHidden
     //#else
-    this.options.hideGui
+    //$$ this.options.hideGui
     //#endif

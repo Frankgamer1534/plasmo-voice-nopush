@@ -12,7 +12,7 @@ fun Display.transformationOffset(): Vec3? {
     val renderState = renderState() ?: return null
     val translation = renderState.transformation()
         .get(interpolationProgress())
-        .translation
+        .translation()
 
     val offset = renderState.orientation(this).transform(translation, Vector3f())
     return Vec3(offset.x.toDouble(), offset.y.toDouble(), offset.z.toDouble())
@@ -30,9 +30,9 @@ private fun Display.interpolationProgress(): Float {
 
 // same as DisplayRenderer#calculateOrientation
 private fun Display.RenderState.orientation(display: Display): Quaternionf {
-    val camera = Minecraft.getInstance().gameRenderer.mainCamera
-    val cameraYRot = camera.yRot - 180f
-    val cameraXRot = -camera.xRot
+    val camera = Minecraft.getInstance().gameRenderer.mainCamera()
+    val cameraYRot = camera.yRot() - 180f
+    val cameraXRot = -camera.xRot()
 
     val (yRot, xRot) = when (billboardConstraints()) {
         Display.BillboardConstraints.FIXED -> display.yRot to display.xRot

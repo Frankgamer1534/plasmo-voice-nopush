@@ -3,9 +3,9 @@ package su.plo.voice.client.render.level
 import net.minecraft.client.Camera
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
-import net.minecraft.client.renderer.LevelRenderer
+import net.minecraft.util.LightCoordsUtil
 import net.minecraft.core.BlockPos
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import su.plo.lib.mod.client.render.level.LevelRenderStateHolder
 import su.plo.lib.mod.extensions.isHudHidden
@@ -81,9 +81,9 @@ class StaticSourceIconStateExtractor(
                     renderPos.z.toInt(),
                 )
 
-                val light = LevelRenderer.getLightColor(level, blockPos)
+                val light = LightCoordsUtil.getLightCoords(level, blockPos)
 
-                val iconLocation = ResourceLocation.tryParse(sourceLine.icon)
+                val iconLocation = Identifier.tryParse(sourceLine.icon)
                     ?: return@mapNotNull null
 
                 StaticSourceIconState.Entry(

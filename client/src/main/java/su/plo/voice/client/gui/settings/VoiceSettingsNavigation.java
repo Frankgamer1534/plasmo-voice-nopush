@@ -3,7 +3,7 @@ package su.plo.voice.client.gui.settings;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 import lombok.Getter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.ResourceLocationUtil;
@@ -34,10 +34,10 @@ import static su.plo.lib.mod.client.gui.widget.GuiWidget.INWORLD_FOOTER_SEPARATO
 
 public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
-    private static final ResourceLocation MICROPHONE_ICON = ResourceLocationUtil.mod("textures/icons/microphone_menu.png");
-    private static final ResourceLocation MICROPHONE_DISABLED_ICON = ResourceLocationUtil.mod("textures/icons/microphone_menu_disabled.png");
-    private static final ResourceLocation SPEAKER_ICON = ResourceLocationUtil.mod("textures/icons/speaker_menu.png");
-    private static final ResourceLocation SPEAKER_DISABLED_ICON = ResourceLocationUtil.mod("textures/icons/speaker_menu_disabled.png");
+    private static final Identifier MICROPHONE_ICON = ResourceLocationUtil.mod("textures/icons/microphone_menu.png");
+    private static final Identifier MICROPHONE_DISABLED_ICON = ResourceLocationUtil.mod("textures/icons/microphone_menu_disabled.png");
+    private static final Identifier SPEAKER_ICON = ResourceLocationUtil.mod("textures/icons/speaker_menu.png");
+    private static final Identifier SPEAKER_DISABLED_ICON = ResourceLocationUtil.mod("textures/icons/speaker_menu_disabled.png");
 
     private final PlasmoVoiceClient voiceClient;
     private final VoiceSettingsScreen parent;
@@ -261,7 +261,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
     public void addTab(
             @NotNull McTextComponent name,
-            @NotNull ResourceLocation iconLocation,
+            @NotNull Identifier iconLocation,
             @NotNull TabWidget tabWidget
     ) {
         int elementIndex = tabWidgets.size();

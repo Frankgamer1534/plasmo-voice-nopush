@@ -33,32 +33,32 @@ import su.plo.voice.server.ModVoiceServer;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 
 //#if MC>=1.21.6
-//$$ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-//$$ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 //#elseif MC>=1.21.4
 //$$ import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 //$$ import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 //#else
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+//$$ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 //#endif
 
 import su.plo.slib.mod.channel.ByteArrayCodec;
 import su.plo.slib.mod.channel.ModChannelManager;
 
 //#if MC>=26.3
-//$$ import net.fabricmc.fabric.api.client.rendering.v1.FeatureRendererRegistry;
-//$$ import su.plo.lib.mod.client.render.feature.SeeThroughGeometryFeatureRenderer;
+import net.fabricmc.fabric.api.client.rendering.v1.FeatureRendererRegistry;
+import su.plo.lib.mod.client.render.feature.SeeThroughGeometryFeatureRenderer;
 //#endif
 
 //#if MC<=1.21.1
-import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
+//$$ import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
 //#endif
 
 //#elseif NEOFORGE
@@ -98,12 +98,12 @@ import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallbac
 //#endif
 
 //#if MC>=12109
-//$$ import su.plo.lib.mod.client.ResourceLocationUtil;
+import su.plo.lib.mod.client.ResourceLocationUtil;
 //#endif
 
 //#if MC<=1.21.4
-import su.plo.lib.mod.client.render.shader.ShadersCache;
-import su.plo.lib.mod.client.render.shader.SolidColorShader;
+//$$ import su.plo.lib.mod.client.render.shader.ShadersCache;
+//$$ import su.plo.lib.mod.client.render.shader.SolidColorShader;
 //#endif
 
 import java.io.File;
@@ -122,12 +122,12 @@ public final class ModVoiceClient extends BaseVoiceClient
 
     public static final KeyMapping MENU_KEY = new KeyMapping(
             "key.plasmovoice.settings",
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.KEY_V,
             //#if MC>=12109
-            //$$ KeyMapping.Category.register(ResourceLocationUtil.mod("name"))
+            KeyMapping.Category.register(ResourceLocationUtil.mod("name"))
             //#else
-            "Plasmo Voice"
+            //$$ "Plasmo Voice"
             //#endif
     );
 
@@ -195,51 +195,51 @@ public final class ModVoiceClient extends BaseVoiceClient
         ClientLifecycleEvents.CLIENT_STOPPING.register((minecraft) -> onShutdown());
 
         //#if MC>=1.21.6
-        //$$ HudElementRegistry.attachElementAfter(
-        //$$         VanillaHudElements.CHAT,
-        //$$         ModHudRenderer.KEY,
-        //$$         ModHudRenderer::render
-        //$$ );
+        HudElementRegistry.attachElementAfter(
+                VanillaHudElements.CHAT,
+                ModHudRenderer.KEY,
+                ModHudRenderer::render
+        );
         //#elseif MC>=1.21.4
         //$$ HudLayerRegistrationCallback.EVENT.register((layers) ->
         //$$         layers.attachLayerAfter(IdentifiedLayer.CHAT, ModHudRenderer.KEY, ModHudRenderer::render)
         //$$ );
         //#else
-        HudRenderCallback.EVENT.register(ModHudRenderer::render);
+        //$$ HudRenderCallback.EVENT.register(ModHudRenderer::render);
         //#endif
 
         //#if MC>=1.21.11
-        //$$ WorldRenderEvents.END_EXTRACTION.register(
-        //$$         (context) ->
-        //$$                 LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
-        //$$                         context.world(),
-        //$$                         context.camera(),
-        //$$                         context.tickCounter().getRealtimeDeltaTicks(),
-        //$$ // idk why, but additional mappings doesn't want to remap worldState -> levelState
+        LevelRenderEvents.END_EXTRACTION.register(
+                (context) ->
+                        LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
+                                context.level(),
+                                context.camera(),
+                                context.deltaTracker().getRealtimeDeltaTicks(),
+        // idk why, but additional mappings doesn't want to remap worldState -> levelState
         //#if MC>=26.1
-        //$$                         new LevelRenderStateHolder(context.levelState())
+                                new LevelRenderStateHolder(context.levelState())
         //#else
         //$$                         new LevelRenderStateHolder(context.worldState())
         //#endif
-        //$$                 )
-        //$$ );
+                        )
+        );
         //#if MC>=26.2
-        //$$ LevelRenderEvents.COLLECT_SUBMITS.register(
+        LevelRenderEvents.COLLECT_SUBMITS.register(
+                (context) ->
+                        LevelRenderEvent.INSTANCE.getInvoker().onRender(
+                                new LevelRenderContext(
+                                        context.poseStack(),
+                                        new LevelRenderStateHolder(context.levelState()),
+                                        context.submitNodeCollector()
+                                )
+                        )
+        );
+        //#else
+        //$$ LevelRenderEvents.END_MAIN.register(
         //$$         (context) ->
         //$$                 LevelRenderEvent.INSTANCE.getInvoker().onRender(
         //$$                         new LevelRenderContext(
         //$$                                 context.poseStack(),
-        //$$                                 new LevelRenderStateHolder(context.levelState()),
-        //$$                                 context.submitNodeCollector()
-        //$$                         )
-        //$$                 )
-        //$$ );
-        //#else
-        //$$ WorldRenderEvents.END_MAIN.register(
-        //$$         (context) ->
-        //$$                 LevelRenderEvent.INSTANCE.getInvoker().onRender(
-        //$$                         new LevelRenderContext(
-        //$$                                 context.matrices(),
         //#if MC>=26.1
         //$$                                 new LevelRenderStateHolder(context.levelState())
         //#else
@@ -250,26 +250,26 @@ public final class ModVoiceClient extends BaseVoiceClient
         //$$ );
         //#endif
         //#else
-        WorldRenderEvents.LAST.register(
-                (context) -> {
-                    LevelRenderStateHolder state = new LevelRenderStateHolder();
-                    LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
-                            context.world(),
-                            context.camera(),
-                            context.tickCounter().getRealtimeDeltaTicks(),
-                            state
-                    );
-
-                    LevelRenderEvent.INSTANCE.getInvoker().onRender(
-                            new LevelRenderContext(
-                                    context.world(),
-                                    context.camera(),
-                                    context.matrixStack(),
-                                    state
-                            )
-                    );
-                }
-        );
+        //$$ WorldRenderEvents.LAST.register(
+        //$$         (context) -> {
+        //$$             LevelRenderStateHolder state = new LevelRenderStateHolder();
+        //$$             LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
+        //$$                     context.world(),
+        //$$                     context.camera(),
+        //$$                     context.tickCounter().getRealtimeDeltaTicks(),
+        //$$                     state
+        //$$             );
+        //$$
+        //$$             LevelRenderEvent.INSTANCE.getInvoker().onRender(
+        //$$                     new LevelRenderContext(
+        //$$                             context.world(),
+        //$$                             context.camera(),
+        //$$                             context.matrixStack(),
+        //$$                             state
+        //$$                     )
+        //$$             );
+        //$$         }
+        //$$ );
         //#endif
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onServerDisconnect());
 
@@ -279,20 +279,20 @@ public final class ModVoiceClient extends BaseVoiceClient
         ClientPlayNetworking.registerGlobalReceiver(voiceChannelCodec.getType(), handler);
         ClientPlayNetworking.registerGlobalReceiver(flagChannelCodec.getType(), (payload, context) -> {});
 
-        KeyBindingHelper.registerKeyBinding(MENU_KEY);
+        KeyMappingHelper.registerKeyMapping(MENU_KEY);
 
         //#if MC>=26.3
-        //$$ FeatureRendererRegistry.register(SeeThroughGeometryFeatureRenderer.TYPE, SeeThroughGeometryFeatureRenderer::new);
+        FeatureRendererRegistry.register(SeeThroughGeometryFeatureRenderer.TYPE, SeeThroughGeometryFeatureRenderer::new);
         //#endif
 
         //#if MC<=1.21.1
-        CoreShaderRegistrationCallback.EVENT.register(context -> {
-            context.register(
-                    SolidColorShader.LOCATION,
-                    SolidColorShader.VERTEX_FORMAT,
-                    (shader) -> ShadersCache.put(SolidColorShader.LOCATION, shader)
-            );
-        });
+        //$$ CoreShaderRegistrationCallback.EVENT.register(context -> {
+        //$$     context.register(
+        //$$             SolidColorShader.LOCATION,
+        //$$             SolidColorShader.VERTEX_FORMAT,
+        //$$             (shader) -> ShadersCache.put(SolidColorShader.LOCATION, shader)
+        //$$     );
+        //$$ });
         //#endif
     }
 

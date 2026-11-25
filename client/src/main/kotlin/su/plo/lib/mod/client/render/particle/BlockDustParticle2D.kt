@@ -2,7 +2,7 @@ package su.plo.lib.mod.client.render.particle
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import net.minecraft.world.level.block.state.BlockState
 import su.plo.lib.mod.client.render.Colors.times
@@ -16,7 +16,7 @@ class BlockDustParticle2D(
     state: BlockState,
 ) {
     private val sprite: TextureAtlasSprite
-    private val textureLocation: ResourceLocation
+    private val textureLocation: Identifier
     private val color: Color
 
     // random offset into the block texture this particle samples from
@@ -41,9 +41,9 @@ class BlockDustParticle2D(
         val client = Minecraft.getInstance()
 
         //#if MC>=26.1
-        //$$ sprite = client.modelManager.blockStateModelSet.getParticleMaterial(state).sprite()
+        sprite = client.modelManager.blockStateModelSet.getParticleMaterial(state).sprite()
         //#else
-        sprite = client.blockRenderer.blockModelShaper.getParticleIcon(state)
+        //$$ sprite = client.blockRenderer.blockModelShaper.getParticleIcon(state)
         //#endif
 
         textureLocation = sprite.atlasLocation()
@@ -51,18 +51,18 @@ class BlockDustParticle2D(
         val level = client.level
         val player = client.player
         //#if MC>=26.1
-        //$$ val tintSource = client.blockColors.getTintSource(state, 0)
-        //$$ val tint = if (tintSource != null && level != null && player != null) {
-        //$$     tintSource.colorAsTerrainParticle(state, level, player.blockPosition())
-        //$$ } else {
-        //$$     -1
-        //$$ }
-        //#else
-        val tint = if (level != null && player != null) {
-            client.blockColors.getColor(state, level, player.blockPosition(), 0)
+        val tintSource = client.blockColors.getTintSource(state, 0)
+        val tint = if (tintSource != null && level != null && player != null) {
+            tintSource.colorAsTerrainParticle(state, level, player.blockPosition())
         } else {
             -1
         }
+        //#else
+        //$$ val tint = if (level != null && player != null) {
+        //$$     client.blockColors.getColor(state, level, player.blockPosition(), 0)
+        //$$ } else {
+        //$$     -1
+        //$$ }
         //#endif
 
         color = Color(tint) * 0.5

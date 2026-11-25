@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.BooleanConfigEntry;
@@ -432,7 +432,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                             mouseY
                     );
                 },
-                ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu.png"),
+                Identifier.tryParse("plasmovoice:textures/icons/microphone_menu.png"),
                 true
         );
         IconButton enableToggleState = new IconButton(
@@ -459,7 +459,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                             mouseY
                     );
                 },
-                ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu_disabled.png"),
+                Identifier.tryParse("plasmovoice:textures/icons/microphone_menu_disabled.png"),
                 true
         );
 

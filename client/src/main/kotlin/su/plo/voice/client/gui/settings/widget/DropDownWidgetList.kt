@@ -44,8 +44,8 @@ class DropDownWidgetList(
 
         parent.deferredRender {
             //#if MC<12106
-            context.stack.pushPose()
-            context.stack.translate(0.0, 0.0, 10.0)
+            //$$ context.stack.pushPose()
+            //$$ context.stack.translate(0.0, 0.0, 10.0)
             //#endif
 
             super.render(context, parent.mouseX, parent.mouseY, delta)
@@ -63,7 +63,7 @@ class DropDownWidgetList(
             }
 
             //#if MC<12106
-            context.stack.popPose()
+            //$$ context.stack.popPose()
             //#endif
         }
     }

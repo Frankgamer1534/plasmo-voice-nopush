@@ -9,6 +9,6 @@ fun PoseStack.rotate(angle: Float, x: Float, y: Float, z: Float, degrees: Boolea
 
     last().run {
         val angleRadians = if (degrees) Math.toRadians(angle.toDouble()).toFloat() else angle
-        mulPose(Quaternionf().rotateAxis(angleRadians, x, y, z))
+        rotate(Quaternionf().rotateAxis(angleRadians, x, y, z))
     }
 }

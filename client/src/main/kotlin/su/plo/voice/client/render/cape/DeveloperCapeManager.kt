@@ -7,7 +7,7 @@ import com.google.common.hash.Hashing
 import com.mojang.authlib.minecraft.MinecraftProfileTexture
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins
 import su.plo.voice.client.meta.PlasmoVoiceMeta
@@ -19,23 +19,23 @@ import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 
 //#if MC>=12109
-//$$ import net.minecraft.core.ClientAsset
-//$$
-//$$ import java.util.Optional
+import net.minecraft.core.ClientAsset
+
+import java.util.Optional
 //#endif
 
-import net.minecraft.client.resources.PlayerSkin
+import net.minecraft.world.entity.player.PlayerSkin
 
 //#if MC>=12104
-//$$ import net.minecraft.client.renderer.texture.SkinTextureDownloader
+import net.minecraft.client.renderer.texture.SkinTextureDownloader
 //#else
-import net.minecraft.client.renderer.texture.HttpTexture
-import java.util.concurrent.TimeoutException
+//$$ import net.minecraft.client.renderer.texture.HttpTexture
+//$$ import java.util.concurrent.TimeoutException
 //#endif
 
 object DeveloperCapeManager {
 
-    private val loadedCapes: Cache<String, Supplier<Supplier<ResourceLocation?>>> = CacheBuilder.newBuilder()
+    private val loadedCapes: Cache<String, Supplier<Supplier<Identifier?>>> = CacheBuilder.newBuilder()
         .expireAfterAccess(10L, TimeUnit.MINUTES)
         .build()
 
@@ -43,29 +43,29 @@ object DeveloperCapeManager {
         .expireAfterAccess(10L, TimeUnit.MINUTES)
         .build()
 
-    fun addCapeToSkin(playerName: String, capeTexture: ResourceLocation, skin: PlayerSkin): PlayerSkin {
+    fun addCapeToSkin(playerName: String, capeTexture: Identifier, skin: PlayerSkin): PlayerSkin {
         var newSkin = convertedSkins.getIfPresent(playerName)
 
-        if (newSkin == null || skin.texture != newSkin.texture) {
+        if (newSkin == null || skin.body() != newSkin.body()) {
     //#if MC>=12109
-    //$$         val capeAsset = ClientAsset.ResourceTexture(capeTexture, capeTexture)
-    //$$         newSkin = skin.with(
-    //$$             PlayerSkin.Patch(
-    //$$                 Optional.empty(),
-    //$$                 Optional.of(capeAsset),
-    //$$                 Optional.of(capeAsset),
-    //$$                 Optional.empty(),
-    //$$             ),
-    //$$         )!!
+            val capeAsset = ClientAsset.ResourceTexture(capeTexture, capeTexture)
+            newSkin = skin.with(
+                PlayerSkin.Patch(
+                    Optional.empty(),
+                    Optional.of(capeAsset),
+                    Optional.of(capeAsset),
+                    Optional.empty(),
+                ),
+            )!!
     //#else
-            newSkin = PlayerSkin(
-                skin.texture(),
-                skin.textureUrl(),
-                capeTexture,
-                capeTexture,
-                skin.model(),
-                skin.secure()
-            )
+    //$$         newSkin = PlayerSkin(
+    //$$             skin.texture(),
+    //$$             skin.textureUrl(),
+    //$$             capeTexture,
+    //$$             capeTexture,
+    //$$             skin.model(),
+    //$$             skin.secure()
+    //$$         )
     //#endif
             convertedSkins.put(playerName, newSkin)
         }
@@ -83,7 +83,7 @@ object DeveloperCapeManager {
             developer.name == playerName || developer.aliases.contains(playerName)
         }
 
-    fun getCapeLocation(playerName: String): ResourceLocation? {
+    fun getCapeLocation(playerName: String): Identifier? {
         return loadedCapes.get(playerName) {
             Suppliers.memoize {
                 if (!hasCape(playerName))
@@ -97,7 +97,7 @@ object DeveloperCapeManager {
         }.get().get()
     }
 
-    private fun getCapeLocationAsync(playerName: String): CompletableFuture<ResourceLocation?> =
+    private fun getCapeLocationAsync(playerName: String): CompletableFuture<Identifier?> =
         CompletableFuture.supplyAsync {
             val capeLocation = ResourceLocationUtil.tryBuild("plasmovoice", "developer_capes/${playerName.lowercase()}")!!
 
@@ -117,36 +117,36 @@ object DeveloperCapeManager {
             }
 
             //#if MC>=12104
-            //$$ try {
+            try {
             //#if MC>=12109
-            //$$     skinManagerAccessor.plasmovoice_skinTextureDownloader().downloadAndRegisterSkin(
+                skinManagerAccessor.plasmovoice_skinTextureDownloader().downloadAndRegisterSkin(
             //#else
             //$$     SkinTextureDownloader.downloadAndRegisterSkin(
             //#endif
-            //$$         capeLocation,
-            //$$         capeFile.toPath(),
-            //$$         texture.url,
-            //$$         false
-            //$$     ).get()
-            //$$ } catch (ignored: Exception) {
-            //$$ }
+                    capeLocation,
+                    capeFile.toPath(),
+                    texture.url,
+                    false
+                ).get()
+            } catch (ignored: Exception) {
+            }
             //#else
-            val future = CompletableFuture<Void>()
-            RenderSystem.recordRenderCall {
-                try {
-                    Minecraft.getInstance().textureManager.register(
-                        capeLocation,
-                        HttpTexture(capeFile, texture.url, ModPlayerSkins.getDefaultSkin(UUID.randomUUID()), false) {}
-                    )
-                    future.complete(null)
-                } catch (e: Throwable) {
-                    future.completeExceptionally(e)
-                }
-            }
-            try {
-                future.get(5, TimeUnit.SECONDS)
-            } catch (_: TimeoutException) {
-            }
+            //$$ val future = CompletableFuture<Void>()
+            //$$ RenderSystem.recordRenderCall {
+            //$$     try {
+            //$$         Minecraft.getInstance().textureManager.register(
+            //$$             capeLocation,
+            //$$             HttpTexture(capeFile, texture.url, ModPlayerSkins.getDefaultSkin(UUID.randomUUID()), false) {}
+            //$$         )
+            //$$         future.complete(null)
+            //$$     } catch (e: Throwable) {
+            //$$         future.completeExceptionally(e)
+            //$$     }
+            //$$ }
+            //$$ try {
+            //$$     future.get(5, TimeUnit.SECONDS)
+            //$$ } catch (_: TimeoutException) {
+            //$$ }
             //#endif
 
             capeLocation

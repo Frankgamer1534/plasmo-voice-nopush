@@ -1,120 +1,47 @@
-[![Latest release](https://img.shields.io/github/release/plasmoapp/plasmo-voice.svg)](https://github.com/plasmoapp/plasmo-voice/releases/latest)
-[![Discord](http://img.shields.io/discord/833693644501286993?label=Discord&style=flat&logo=discord)](https://discord.gg/uueEqzwCJJ)
+# Plasmo Voice — Fabric 26.3
 
-<div align="center">
-  <img src="https://imgur.com/3ccgCRz.png" alt="Plasmo Voice Logo">
-  <div>
-    <a href="https://modrinth.com/mod/plasmo-voice">Modrinth</a>
-    <span> | </span>
-    <a href="https://www.curseforge.com/minecraft/mc-mods/plasmo-voice">CurseForge</a>
-    <span> | </span>
-    <a href="https://github.com/plasmoapp/plasmo-voice">GitHub</a>
-    <span> | </span>
-    <a href="https://plasmovoice.com">Documentation</a>
-    <span> | </span>
-    <a href="https://plasmovoice.com/docs/addons/">Addons</a>
-    <span> | </span>
-    <a href="https://discord.com/invite/uueEqzwCJJ">Discord</a>
-    <span> | </span>
-    <a href="https://www.patreon.com/plasmomc">Patreon</a>
-  </div>
-</div>
+Standalone Gradle project that builds the **Plasmo Voice** client mod for **Minecraft 26.3 (Fabric)**.
 
-## Available for all popular platforms
+The repository only contains the Fabric 26.3 client. Servers, proxies, other loaders and other
+Minecraft versions are not included.
 
-Paper, Folia, Fabric, and NeoForge servers are fully compatible with both Fabric and NeoForge clients.
+## Requirements
 
-To use voice chat, players must install the client-side mod for **Fabric** or **NeoForge**.
-Players without the mod can still join the server and play as usual – they just won't have access to voice chat
-features.
+- JDK 25
+- Internet access on the first build (Gradle, Loom, Minecraft and mod dependencies)
 
-![](https://plasmovoice.com/landing/compatability-chart.png)
+## Building
 
-*Assuming Plasmo Voice is installed on both client and the server.*
+```bash
+./gradlew build
+```
 
-## Features
+The mod jar is written to `client/build/libs/plasmovoice-fabric-26.3-<version>.jar`.
 
-![](https://plasmovoice.com/landing/hud-icons.png)
+## Testing in-game
 
-![](https://plasmovoice.com/landing/player-icons.png)
+```bash
+./gradlew runClient
+```
 
-![](https://plasmovoice.com/landing/voice-settings.png)
+This launches a development Minecraft 26.3 client with the mod, Fabric Loader 0.20.1,
+Fabric API 0.160.4+26.3 and Mod Menu 21.0.1.
 
-<img src="https://plasmovoice.com/landing/visualise-distance.gif" width="1280px" alt="Voice chat proximity and settings demonstration" />
+## Dependencies
 
-<img src="https://plasmovoice.com/landing/rmb-scroll.gif" width="1280px" alt="Voice chat interface and controls demonstration" />
+- Minecraft 26.3 (unobfuscated)
+- Fabric Loader 0.20.1
+- Fabric API 0.160.4+26.3
+- Cloth Config 26.1.154
+- Mod Menu 21.0.1
+- slib 2.1.2 (`26.1-fabric`)
+- fabric-permissions-api 0.7.0 (bundled)
+- Opus / RNNoise native bindings (bundled)
 
-## Client features
+## Layout
 
-**Audio Quality & Processing**
-
-- RNNoise noise reduction
-- OpenAL sound engine with great 3D positioning
-- Stereo audio sources
-- Smooth volume transitions
-
-**Immersion & Realism**
-
-- Optional sound occlusion (muffles voices through blocks)
-- Optional directional audio sources (quieter if the speaker is not facing you)
-- [Sound Physics Remastered](https://modrinth.com/mod/sound-physics-remastered) compatibility with [pv-addon-soundphysics](https://modrinth.com/mod/pv-addon-soundphysics)
-
-**Controls & Interaction**
-
-- Adjustable voice chat distance
-- Choose between Push to Talk or Voice Activation
-- Hold **RMB** while looking at a player and use the scroll wheel to adjust their volume
-
-**Devices & UI**
-
-- Select input and output audio devices
-- Configurable GUI icon positions
-- Toggle player icon visibility
-- Discord-like in-game overlay
-
-![](https://plasmovoice.com/landing/keybindings.png)
-
-Check out voice settings by pressing `V`. *Make sure you have the right devices selected and your microphone is
-working.*
-
-## Server features
-
-**Audio & Performance**
-
-- Opus codec for low bandwidth usage and high audio quality
-- Configurable voice distance
-
-**Moderation & Control**
-
-- Server-side muting via chat commands
-- Option to kick players without the client mod installed
-- Permissions support
-- Vanish support
-
-**Compatibility & Networking**
-
-- Works in singleplayer and Open to LAN
-- BungeeCord and Velocity support
-
-**Integration & Extensibility**
-
-- PlaceholderAPI support
-- Advanced API
-
-**Security**
-
-- Encrypted voice communication
-
-## Addons
-
-[![Click to browse addons](.github/assets/addons.png)](https://plasmovoice.com/docs/addons/)
-
-## Download
-
-- [Plasmo Voice on Modrinth](https://modrinth.com/mod/plasmo-voice)
-- [Plasmo Voice on CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice)
-- [Releases](https://github.com/plasmoapp/plasmo-voice/releases/)
-
-## Documentation
-
-- [Documentation](https://plasmovoice.com)
+- `client` — Fabric client mod and the final shaded jar
+- `common`, `protocol` — shared voice/protocol code
+- `api/*` — public API modules
+- `server/common`, `server-proxy-common` — server-side code used by the integrated server
+- `macos/protocol` — microphone helper protocol used on macOS

@@ -14,7 +14,7 @@ import net.minecraft.client.resources.language.ClientLanguage;
 import java.util.function.Consumer;
 
 //#if MC>=26.3
-//$$ import net.minecraft.client.Minecraft;
+import net.minecraft.client.Minecraft;
 //#endif
 
 @Mixin(LanguageManager.class)
@@ -22,9 +22,9 @@ public abstract class MixinLanguageManager {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     //#if MC>=26.3
-    //$$ private void init(Minecraft minecraft, String languageCode, Consumer<ClientLanguage> reloadCallback, CallbackInfo ci) {
+    private void init(Minecraft minecraft, String languageCode, Consumer<ClientLanguage> reloadCallback, CallbackInfo ci) {
     //#else
-    private void init(String languageCode, Consumer<ClientLanguage> reloadCallback, CallbackInfo ci) {
+    //$$ private void init(String languageCode, Consumer<ClientLanguage> reloadCallback, CallbackInfo ci) {
     //#endif
         PlasmoVoiceMeta.Companion.fetch(languageCode);
     }

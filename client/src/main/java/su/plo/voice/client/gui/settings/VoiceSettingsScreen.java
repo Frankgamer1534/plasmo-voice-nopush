@@ -10,7 +10,7 @@ import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
@@ -33,11 +33,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 //#if MC<12105
-import com.mojang.blaze3d.systems.RenderSystem;
+//$$ import com.mojang.blaze3d.systems.RenderSystem;
 //#endif
 
 //#if MC>=12109
-//$$ import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.KeyEvent;
 //#endif
 
 // todo: narratables
@@ -102,38 +102,38 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
         navigation.addTab(
                 McTextComponent.translatable("gui.plasmovoice.devices"),
-                ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/devices.png"),
+                Identifier.tryParse("plasmovoice:textures/icons/tabs/devices.png"),
                 new DevicesTabWidget(this, voiceClient, config, testController)
         );
         navigation.addTab(
                 McTextComponent.translatable("gui.plasmovoice.volume"),
-                ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/volume.png"),
+                Identifier.tryParse("plasmovoice:textures/icons/tabs/volume.png"),
                 new VolumeTabWidget(this, voiceClient, config)
         );
         navigation.addTab(
                 McTextComponent.translatable("gui.plasmovoice.activation"),
-                ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/activation.png"),
+                Identifier.tryParse("plasmovoice:textures/icons/tabs/activation.png"),
                 new ActivationTabWidget(this, voiceClient, config)
         );
         navigation.addTab(
                 McTextComponent.translatable("gui.plasmovoice.overlay"),
-                ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/overlay.png"),
+                Identifier.tryParse("plasmovoice:textures/icons/tabs/overlay.png"),
                 new OverlayTabWidget(this, voiceClient, config)
         );
         navigation.addTab(
                 McTextComponent.translatable("gui.plasmovoice.advanced"),
-                ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/advanced.png"),
+                Identifier.tryParse("plasmovoice:textures/icons/tabs/advanced.png"),
                 new AdvancedTabWidget(this, voiceClient, config)
         );
         navigation.addTab(
                 McTextComponent.translatable("gui.plasmovoice.hotkeys"),
-                ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/hotkeys.png"),
+                Identifier.tryParse("plasmovoice:textures/icons/tabs/hotkeys.png"),
                 new HotKeysTabWidget(this, voiceClient, config)
         );
         if (voiceClient.getAddonConfigs().size() > 0) {
             navigation.addTab(
                     McTextComponent.translatable("gui.plasmovoice.addons"),
-                    ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/addons.png"),
+                    Identifier.tryParse("plasmovoice:textures/icons/tabs/addons.png"),
                     new AddonsTabWidget(this, voiceClient, config)
             );
         }
@@ -185,12 +185,12 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         }
 
         //#if MC<12105
-        RenderSystem.defaultBlendFunc();
+        //$$ RenderSystem.defaultBlendFunc();
         //#endif
 
         // background is rendered by default and there is no way override this behavior without mixins
         //#if MC<12106
-        screen.renderBackground(context);
+        //$$ screen.renderBackground(context);
         //#endif
 
         navigation.renderTab(context, mouseX, mouseY, delta);
@@ -229,9 +229,9 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         }
 
         //#if MC>=12109
-        //$$ if (ModVoiceClient.MENU_KEY.matches(new KeyEvent(keyCode, 0, modifiers))) {
+        if (ModVoiceClient.MENU_KEY.matches(new KeyEvent(keyCode, 0, modifiers))) {
         //#else
-        if (ModVoiceClient.MENU_KEY.matches(keyCode, 0)) {
+        //$$ if (ModVoiceClient.MENU_KEY.matches(keyCode, 0)) {
         //#endif
             VoiceScreens.INSTANCE.openSettings(voiceClient);
             return true;

@@ -85,7 +85,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
     public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         // background is rendered by default and there is no way override this behavior without mixins
         //#if MC<12106
-        screen.renderBackground(context);
+        //$$ screen.renderBackground(context);
         //#endif
 
         int messageLines = context.drawStringMultiLineCentered(

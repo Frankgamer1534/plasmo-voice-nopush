@@ -2,7 +2,7 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
@@ -92,7 +92,7 @@ public final class OverlayTabWidget extends TabWidget {
     private OptionWidget<?> createOverlaySource(@NotNull ClientSourceLine sourceLine) {
         EnumConfigEntry<OverlaySourceState> configEntry = config.getOverlay().getSourceStates().getState(sourceLine);
         GuiAbstractWidget label = iconLabel(
-                ResourceLocation.tryParse(sourceLine.getIcon()),
+                Identifier.tryParse(sourceLine.getIcon()),
                 McTextComponent.translatable(sourceLine.getTranslation())
         );
 

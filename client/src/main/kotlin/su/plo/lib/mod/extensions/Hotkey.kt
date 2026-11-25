@@ -6,11 +6,11 @@ import su.plo.voice.api.client.config.hotkey.Hotkey
 fun Hotkey.Key.toMinecraft(): InputConstants.Key? =
     when (type) {
         Hotkey.Type.MOUSE -> InputConstants.Type.MOUSE.getOrCreate(code)
-        Hotkey.Type.KEYSYM -> InputConstants.Type.KEYSYM.getOrCreate(code)
+        Hotkey.Type.KEYSYM -> InputConstants.Type.KEYBOARD.getOrCreate(code)
         //#if MC<26.3
-        Hotkey.Type.SCANCODE -> InputConstants.Type.SCANCODE.getOrCreate(code)
+        //$$ Hotkey.Type.SCANCODE -> InputConstants.Type.SCANCODE.getOrCreate(code)
         //#else
-        //$$ else -> null
+        else -> null
         //#endif
     }
 
@@ -20,9 +20,9 @@ fun Hotkey.Key.serializedName(): String? =
 fun InputConstants.Key.toHotkey(): Hotkey.Key? =
     when (type) {
         InputConstants.Type.MOUSE -> Hotkey.Type.MOUSE.getOrCreate(value)
-        InputConstants.Type.KEYSYM -> Hotkey.Type.KEYSYM.getOrCreate(value)
+        InputConstants.Type.KEYBOARD -> Hotkey.Type.KEYSYM.getOrCreate(value)
         //#if MC<26.3
-        InputConstants.Type.SCANCODE -> Hotkey.Type.SCANCODE.getOrCreate(value)
+        //$$ InputConstants.Type.SCANCODE -> Hotkey.Type.SCANCODE.getOrCreate(value)
         //#endif
         else -> null
     }

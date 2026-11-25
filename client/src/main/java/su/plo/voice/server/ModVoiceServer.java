@@ -1,6 +1,6 @@
 package su.plo.voice.server;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.slib.api.server.McServerLib;
@@ -18,9 +18,9 @@ public final class ModVoiceServer extends BaseVoiceServer {
     // static instance is used for access from mixins
     public static ModVoiceServer INSTANCE;
 
-    public static final ResourceLocation CHANNEL = ResourceLocation.tryParse(CHANNEL_STRING);
-    public static final ResourceLocation FLAG_CHANNEL = ResourceLocation.tryParse(FLAG_CHANNEL_STRING);
-    public static final ResourceLocation SERVICE_CHANNEL = ResourceLocation.tryParse(SERVICE_CHANNEL_STRING);
+    public static final Identifier CHANNEL = Identifier.tryParse(CHANNEL_STRING);
+    public static final Identifier FLAG_CHANNEL = Identifier.tryParse(FLAG_CHANNEL_STRING);
+    public static final Identifier SERVICE_CHANNEL = Identifier.tryParse(SERVICE_CHANNEL_STRING);
 
     private final String modId = "plasmovoice";
 

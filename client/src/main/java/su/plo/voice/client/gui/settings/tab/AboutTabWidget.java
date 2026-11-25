@@ -1,6 +1,6 @@
 package su.plo.voice.client.gui.settings.tab;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.lib.mod.client.gui.components.CompositeColumnWidget;
 import su.plo.lib.mod.client.gui.components.CompositeRowWidget;
@@ -171,7 +171,7 @@ public final class AboutTabWidget extends TabWidget {
         protected void renderBackground(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
             renderCardBackground(context, x, y, width, height);
 
-            ResourceLocation skinLocation = ModPlayerSkins.getSkin(developer.getUuid(), developer.getName());
+            Identifier skinLocation = ModPlayerSkins.getSkin(developer.getUuid(), developer.getName());
 
             context.blit(skinLocation, x + 4, y + 4, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
             context.blit(skinLocation, x + 4, y + 4, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
@@ -206,7 +206,7 @@ public final class AboutTabWidget extends TabWidget {
         public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
             renderCardBackground(context, x, y, width, height);
 
-            ResourceLocation skinLocation = ModPlayerSkins.getSkin(patron.getUuid(), patron.getName());
+            Identifier skinLocation = ModPlayerSkins.getSkin(patron.getUuid(), patron.getName());
 
             context.blit(skinLocation, x + 2, y + 2, 16, 16, 8.0F, 8.0F, 8, 8, 64, 64);
             context.blit(skinLocation, x + 2, y + 2, 16, 16, 40.0F, 8.0F, 8, 8, 64, 64);

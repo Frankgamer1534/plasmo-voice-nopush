@@ -9,10 +9,10 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface EntityRendererAccessor {
 
     //#if MC>=12102
-    //$$ @Invoker("shouldShowName")
-    //$$ boolean plasmovoice_shouldShowName(Entity entity, double distanceToCamera);
-    //#else
     @Invoker("shouldShowName")
-    boolean plasmovoice_shouldShowName(Entity entity);
+    boolean plasmovoice_shouldShowName(Entity entity, double distanceToCamera);
+    //#else
+    //$$ @Invoker("shouldShowName")
+    //$$ boolean plasmovoice_shouldShowName(Entity entity);
     //#endif
 }

@@ -6,7 +6,7 @@ import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import java.awt.Color;
 import java.util.function.Supplier;
@@ -17,7 +17,7 @@ public final class IconButton extends Button {
     private final Color shadowColor;
     @Getter
     @Setter
-    private Supplier<ResourceLocation> iconLocation;
+    private Supplier<Identifier> iconLocation;
     @Getter
     @Setter
     private @Nullable Color iconColor = null;
@@ -29,7 +29,7 @@ public final class IconButton extends Button {
             int height,
             @NotNull OnPress pressAction,
             @NotNull OnTooltip tooltipAction,
-            @NotNull Supplier<ResourceLocation> iconLocation,
+            @NotNull Supplier<Identifier> iconLocation,
             boolean shadow
     ) {
         this(x, y, width, height, pressAction, tooltipAction, iconLocation, shadow, Colors.WHITE);
@@ -42,7 +42,7 @@ public final class IconButton extends Button {
             int height,
             @NotNull OnPress pressAction,
             @NotNull OnTooltip tooltipAction,
-            @NotNull ResourceLocation iconLocation,
+            @NotNull Identifier iconLocation,
             boolean shadow
     ) {
         this(x, y, width, height, pressAction, tooltipAction, () -> iconLocation, shadow, Colors.WHITE);
@@ -55,7 +55,7 @@ public final class IconButton extends Button {
             int height,
             @NotNull OnPress pressAction,
             @NotNull OnTooltip tooltipAction,
-            @NotNull Supplier<ResourceLocation> iconLocation,
+            @NotNull Supplier<Identifier> iconLocation,
             boolean shadow,
             Color shadowColor
     ) {
@@ -70,7 +70,7 @@ public final class IconButton extends Button {
     public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         super.renderButton(context, mouseX, mouseY, delta);
 
-        ResourceLocation iconLocation = this.iconLocation.get();
+        Identifier iconLocation = this.iconLocation.get();
 
         Color iconColor = this.iconColor;
         if (iconColor == null) {

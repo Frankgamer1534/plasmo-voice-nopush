@@ -3,7 +3,7 @@ package su.plo.lib.mod.client.render
 import net.minecraft.client.Minecraft
 
 //#if MC<1.21.6
-import com.mojang.blaze3d.systems.RenderSystem
+//$$ import com.mojang.blaze3d.systems.RenderSystem
 //#endif
 
 data class ScissorState(
@@ -35,14 +35,14 @@ data class ScissorState(
         }
 
         //#if MC<1.21.6
-        fun applyScissorState(state: ScissorState?) {
-            if (state == null) {
-                RenderSystem.disableScissor()
-                return
-            }
-
-            RenderSystem.enableScissor(state.x, state.y, state.width, state.height)
-        }
+        //$$ fun applyScissorState(state: ScissorState?) {
+        //$$     if (state == null) {
+        //$$         RenderSystem.disableScissor()
+        //$$         return
+        //$$     }
+        //$$
+        //$$     RenderSystem.enableScissor(state.x, state.y, state.width, state.height)
+        //$$ }
         //#endif
     }
 }

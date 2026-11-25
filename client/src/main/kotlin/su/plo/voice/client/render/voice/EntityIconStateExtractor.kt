@@ -2,9 +2,9 @@ package su.plo.voice.client.render.voice
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.EntityTypes
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import su.plo.lib.mod.extensions.isHudHidden
@@ -42,7 +42,7 @@ object EntityIconStateExtractor {
 
         if (shouldHideIcon || entity.isInvisibleTo(clientPlayer)) return null
 
-        return if (entity.type == EntityType.PLAYER) {
+        return if (entity.type == EntityTypes.PLAYER) {
             extractPlayer(entity, clientPlayer)
         } else {
             extractEntity(entity)
@@ -81,7 +81,7 @@ object EntityIconStateExtractor {
         if (iconLocation == null && percentText == null) return null
 
         return EntityVoiceIconState(
-            iconLocation = iconLocation?.let { ResourceLocation.tryParse(it) },
+            iconLocation = iconLocation?.let { Identifier.tryParse(it) },
             iconOffset = getPlayerIconOffset(entity),
             percentText = percentText,
         )
@@ -94,7 +94,7 @@ object EntityIconStateExtractor {
         val highestSourceLine = getHighestActivatedSourceLine(voiceClient, sources) ?: return null
 
         return EntityVoiceIconState(
-            iconLocation = ResourceLocation.tryParse(highestSourceLine.icon),
+            iconLocation = Identifier.tryParse(highestSourceLine.icon),
             iconOffset = getPlayerIconOffset(entity),
             percentText = null,
         )

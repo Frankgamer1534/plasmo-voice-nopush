@@ -1,7 +1,7 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.mod.client.ResourceLocationUtil;
@@ -23,11 +23,11 @@ import java.util.List;
 
 public final class ActivationThresholdWidget extends AbstractSlider implements UpdatableWidget {
 
-    private static final ResourceLocation STOP_ICON = ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu.png");
-    private static final ResourceLocation START_ICON = ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu_disabled.png");
+    private static final Identifier STOP_ICON = Identifier.tryParse("plasmovoice:textures/icons/speaker_menu.png");
+    private static final Identifier START_ICON = Identifier.tryParse("plasmovoice:textures/icons/speaker_menu_disabled.png");
     private static final McTextComponent NOT_AVAILABLE = McTextComponent.translatable("gui.plasmovoice.devices.not_available");
 
-    private static final ResourceLocation SLIDER_TEXTURE = ResourceLocationUtil.parse("textures/gui/sprites/widget/slider.png");
+    private static final Identifier SLIDER_TEXTURE = ResourceLocationUtil.parse("textures/gui/sprites/widget/slider.png");
 
     private static final Color LEVEL_HIGH_COLOR = new Color(0xFF0000);
     private static final Color LEVEL_MEDIUM_COLOR = new Color(0xFFFF00);

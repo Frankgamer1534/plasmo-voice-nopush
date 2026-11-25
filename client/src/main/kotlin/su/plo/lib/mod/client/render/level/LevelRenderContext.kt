@@ -2,59 +2,59 @@ package su.plo.lib.mod.client.render.level
 
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.rendertype.RenderType
 import su.plo.lib.mod.client.render.GeometrySubmitContext
 
 //#if MC>=1.21.11
-//$$ import net.minecraft.client.renderer.state.CameraRenderState
+import net.minecraft.client.renderer.state.level.CameraRenderState
 //#else
-import net.minecraft.client.Camera
-import net.minecraft.client.multiplayer.ClientLevel
+//$$ import net.minecraft.client.Camera
+//$$ import net.minecraft.client.multiplayer.ClientLevel
 //#endif
 
 //#if MC>=26.2
-//$$ import net.minecraft.client.renderer.SubmitNodeCollection
-//$$ import net.minecraft.client.renderer.SubmitNodeCollector
-//$$ import net.minecraft.client.renderer.feature.CustomFeatureRenderer
+import net.minecraft.client.renderer.SubmitNodeCollection
+import net.minecraft.client.renderer.SubmitNodeCollector
+import net.minecraft.client.renderer.feature.CustomFeatureRenderer
 //#else
-import com.mojang.blaze3d.vertex.ByteBufferBuilder
-import net.minecraft.client.renderer.MultiBufferSource
+//$$ import com.mojang.blaze3d.vertex.ByteBufferBuilder
+//$$ import net.minecraft.client.renderer.MultiBufferSource
 //#endif
 
 data class LevelRenderContext(
     //#if MC<1.21.11
-    val level: ClientLevel,
-    val camera: Camera,
+    //$$ val level: ClientLevel,
+    //$$ val camera: Camera,
     //#endif
     override val stack: PoseStack,
     val state: LevelRenderStateHolder,
     //#if MC>=26.2
-    //$$ override val collector: SubmitNodeCollector,
+    override val collector: SubmitNodeCollector,
     //#endif
 ) : GeometrySubmitContext {
     //#if MC>=1.21.11
-    //$$ val camera: CameraRenderState
-    //$$     get() = state.state.cameraRenderState
+    val camera: CameraRenderState
+        get() = state.state.cameraRenderState
     //#endif
 
     override fun submitGeometry(renderType: RenderType, write: (PoseStack.Pose, VertexConsumer) -> Unit) {
         //#if MC>=26.2
-        //$$ val collection = collector.order(0) as SubmitNodeCollection
-        //$$ collection.afterTerrain.submit(
-        //$$     CustomFeatureRenderer.Submit(stack.last().copy(), renderType) { pose, buffer -> write(pose, buffer) }
-        //$$ )
+        val collection = collector.order(0) as SubmitNodeCollection
+        collection.afterTerrain.submit(
+            CustomFeatureRenderer.Submit(stack.last().copy(), renderType) { pose, buffer -> write(pose, buffer) }
+        )
         //#else
-        write(stack.last(), bufferSource.getBuffer(renderType))
-        bufferSource.endBatch(renderType)
+        //$$ write(stack.last(), bufferSource.getBuffer(renderType))
+        //$$ bufferSource.endBatch(renderType)
         //#endif
     }
     //#if MC<26.2
-
-    private companion object {
-        // mc's `renderBuffers().bufferSource()` can't be used here,
-        // because Iris replaces it with FullyBufferedMultiBufferSource that defers the draw,
-        // breaking transparency for sphere renderer
-        private val bufferSource = MultiBufferSource.immediate(ByteBufferBuilder(1536))
-    }
+    //$$
+    //$$ private companion object {
+    //$$     // mc's `renderBuffers().bufferSource()` can't be used here,
+    //$$     // because Iris replaces it with FullyBufferedMultiBufferSource that defers the draw,
+    //$$     // breaking transparency for sphere renderer
+    //$$     private val bufferSource = MultiBufferSource.immediate(ByteBufferBuilder(1536))
+    //$$ }
     //#endif
 }

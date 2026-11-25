@@ -7,7 +7,7 @@ import su.plo.voice.client.render.cape.SkinManagerAccessor;
 
 import java.io.File;
 
-import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.minecraft.SessionService;
 
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,14 +18,14 @@ import java.nio.file.Path;
 import java.util.concurrent.Executor;
 
 //#if MC<12104
-import net.minecraft.client.renderer.texture.TextureManager;
+//$$ import net.minecraft.client.renderer.texture.TextureManager;
 //#endif
 
 //#if MC>=12109
-//$$ import net.minecraft.client.renderer.texture.SkinTextureDownloader;
-//$$ import net.minecraft.server.Services;
-//$$ import org.spongepowered.asm.mixin.Final;
-//$$ import org.spongepowered.asm.mixin.Shadow;
+import net.minecraft.client.renderer.texture.SkinTextureDownloader;
+import net.minecraft.server.Services;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Shadow;
 //#endif
 
 @Mixin(SkinManager.class)
@@ -35,11 +35,11 @@ public abstract class MixinSkinManager implements SkinManagerAccessor {
     private static File SKINS_DIRECTORY;
     @Inject(at = @At("RETURN"), method = "<init>")
     //#if MC>=12109
-    //$$ private void init(Path path, final Services services, SkinTextureDownloader skinTextureDownloader, Executor executor, CallbackInfo ci) {
+    private void init(Path path, final Services services, SkinTextureDownloader skinTextureDownloader, Executor executor, CallbackInfo ci) {
     //#elseif MC>=12104
     //$$ private void init(Path path, MinecraftSessionService minecraftSessionService, Executor executor, CallbackInfo ci) {
     //#else
-    private void init(TextureManager textureManager, Path path, MinecraftSessionService minecraftSessionService, Executor executor, CallbackInfo ci) {
+    //$$ private void init(TextureManager textureManager, Path path, MinecraftSessionService minecraftSessionService, Executor executor, CallbackInfo ci) {
     //#endif
         SKINS_DIRECTORY = path.toFile();
     }
@@ -50,11 +50,11 @@ public abstract class MixinSkinManager implements SkinManagerAccessor {
     }
 
     //#if MC>=12109
-    //$$ @Shadow @Final private SkinTextureDownloader skinTextureDownloader;
-    //$$ @Override
-    //$$ public @NotNull SkinTextureDownloader plasmovoice_skinTextureDownloader() {
-    //$$     return skinTextureDownloader;
-    //$$ }
+    @Shadow @Final private SkinTextureDownloader skinTextureDownloader;
+    @Override
+    public @NotNull SkinTextureDownloader plasmovoice_skinTextureDownloader() {
+        return skinTextureDownloader;
+    }
     //#endif
 
 }

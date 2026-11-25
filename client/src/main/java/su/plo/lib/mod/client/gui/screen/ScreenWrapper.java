@@ -20,12 +20,12 @@ import java.util.List;
 import java.util.Optional;
 
 //#if MC>=12109
-//$$ import net.minecraft.client.input.CharacterEvent;
-//$$ import net.minecraft.client.input.KeyEvent;
-//$$ import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 //#endif
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 @ToString
 public final class ScreenWrapper
@@ -119,7 +119,7 @@ public final class ScreenWrapper
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         lastMouseX = mouseX;
         lastMouseY = mouseY;
         lastPartialTicks = partialTicks;
@@ -127,11 +127,11 @@ public final class ScreenWrapper
         screen.render(context, mouseX, mouseY, partialTicks);
     }
 
-    public void renderBackground(@NotNull GuiRenderContext context) {
+    public void extractBackground(@NotNull GuiRenderContext context) {
         //#if MC>=12106
-        //$$ context.flush();
+        context.flush();
         //#endif
-        super.renderBackground(context.getMcContext(), lastMouseX, lastMouseY, lastPartialTicks);
+        super.extractBackground(context.getMcContext(), lastMouseX, lastMouseY, lastPartialTicks);
         context.flush();
     }
 
@@ -142,41 +142,41 @@ public final class ScreenWrapper
 
     // ContainerEventHandler override
     //#if MC>=12109
-    //$$  @Override
-    //$$ public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean bl) {
-    //$$     screen.mouseClicked(event.x(), event.y(), event.button());
-    //$$     return false;
-    //$$ }
-    //$$
-    //$$ @Override
-    //$$ public boolean mouseReleased(@NotNull MouseButtonEvent event) {
-    //$$     screen.mouseReleased(event.x(), event.y(), event.button());
-    //$$     return false;
-    //$$ }
-    //$$
-    //$$ @Override
-    //$$ public boolean mouseDragged(@NotNull MouseButtonEvent event, double deltaX, double deltaY) {
-    //$$     screen.mouseDragged(event.x(), event.y(), event.button(), deltaX, deltaY);
-    //$$     return false;
-    //$$ }
+     @Override
+    public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean bl) {
+        screen.mouseClicked(event.x(), event.y(), event.button());
+        return false;
+    }
+
+    @Override
+    public boolean mouseReleased(@NotNull MouseButtonEvent event) {
+        screen.mouseReleased(event.x(), event.y(), event.button());
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(@NotNull MouseButtonEvent event, double deltaX, double deltaY) {
+        screen.mouseDragged(event.x(), event.y(), event.button(), deltaX, deltaY);
+        return false;
+    }
     //#else
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        screen.mouseClicked(mouseX, mouseY, mouseButton);
-        return false;
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        screen.mouseReleased(mouseX, mouseY, button);
-        return false;
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        screen.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-        return false;
-    }
+    //$$ @Override
+    //$$ public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+    //$$     screen.mouseClicked(mouseX, mouseY, mouseButton);
+    //$$     return false;
+    //$$ }
+    //$$
+    //$$ @Override
+    //$$ public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    //$$     screen.mouseReleased(mouseX, mouseY, button);
+    //$$     return false;
+    //$$ }
+    //$$
+    //$$ @Override
+    //$$ public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    //$$     screen.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    //$$     return false;
+    //$$ }
     //#endif
 
     @Override
@@ -186,38 +186,38 @@ public final class ScreenWrapper
     }
 
     //#if MC>=12109
-    //$$ @Override
-    //$$ public boolean charTyped(@NotNull CharacterEvent event) {
+    @Override
+    public boolean charTyped(@NotNull CharacterEvent event) {
     //#if MC>=26.1
-    //$$     return screen.charTyped((char) event.codepoint(), 0);
+        return screen.charTyped((char) event.codepoint(), 0);
     //#else
     //$$     return screen.charTyped((char) event.codepoint(), event.modifiers());
     //#endif
-    //$$ }
-    //#else
-    @Override
-    public boolean charTyped(char typedChar, int modifiers) {
-        return screen.charTyped(typedChar, modifiers);
     }
+    //#else
+    //$$ @Override
+    //$$ public boolean charTyped(char typedChar, int modifiers) {
+    //$$     return screen.charTyped(typedChar, modifiers);
+    //$$ }
     //#endif
 
     //#if MC>=12109
-    //$$ @Override
-    //$$ public boolean keyPressed(@NotNull KeyEvent event) {
-    //$$     return innerKeyPressed(event.key(), event.scancode(), event.modifiers());
-    //$$ }
-    //#else
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return innerKeyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(@NotNull KeyEvent event) {
+        return innerKeyPressed(event.key(), event.keycode(), event.modifiers());
     }
+    //#else
+    //$$ @Override
+    //$$ public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    //$$     return innerKeyPressed(keyCode, scanCode, modifiers);
+    //$$ }
     //#endif
 
     //#if MC>=26.3
-    //$$ @Override
-    //$$ public boolean isInputCaptured() {
-    //$$     return screen.capturesInput();
-    //$$ }
+    @Override
+    public boolean isInputCaptured() {
+        return screen.capturesInput();
+    }
     //#endif
 
     private boolean innerKeyPressed(int keyCode, int scanCode, int modifiers) {
@@ -244,25 +244,25 @@ public final class ScreenWrapper
     }
 
     //#if MC>=12109
-    //$$  @Override
-    //$$  public boolean keyReleased(@NotNull KeyEvent event) {
-    //$$      if (screen.keyReleased(event.key(), (char) 0, event.modifiers())) {
-    //$$          return false;
-    //$$      }
-    //$$
-    //$$      super.keyReleased(event);
-    //$$      return false;
-    //$$  }
-    //#else
-    @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (screen.keyReleased(keyCode, (char) 0, modifiers)) {
-            return false;
-        }
+     @Override
+     public boolean keyReleased(@NotNull KeyEvent event) {
+         if (screen.keyReleased(event.key(), (char) 0, event.modifiers())) {
+             return false;
+         }
 
-        super.keyReleased(keyCode, 0, modifiers);
-        return false;
-    }
+         super.keyReleased(event);
+         return false;
+     }
+    //#else
+    //$$ @Override
+    //$$ public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+    //$$     if (screen.keyReleased(keyCode, (char) 0, modifiers)) {
+    //$$         return false;
+    //$$     }
+    //$$
+    //$$     super.keyReleased(keyCode, 0, modifiers);
+    //$$     return false;
+    //$$ }
     //#endif
 
     // MinecraftScreen impl
@@ -282,13 +282,13 @@ public final class ScreenWrapper
             @NotNull TooltipData tooltip
     ) {
         //#if MC>=12106
-        //$$ context.getMcContext().setTooltipForNextFrame(
-        //$$         tooltip.getLines(),
-        //$$         tooltip.getX(),
-        //$$         tooltip.getY()
-        //$$ );
+        context.getMcContext().setTooltipForNextFrame(
+                tooltip.getLines(),
+                tooltip.getX(),
+                tooltip.getY()
+        );
         //#else
-        setTooltipForNextRenderPass(tooltip.getLines());
+        //$$ setTooltipForNextRenderPass(tooltip.getLines());
         //#endif
     }
 

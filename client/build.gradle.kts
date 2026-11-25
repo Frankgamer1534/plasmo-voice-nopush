@@ -1,90 +1,31 @@
-import com.replaymod.gradle.preprocess.PreprocessTask
-import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
-import gg.essential.gradle.multiversion.mergePlatformSpecifics
-import gg.essential.gradle.util.noServerRunConfigs
-import net.fabricmc.loom.task.RemapJarTask
-import su.plo.crowdin.CrowdinParams
-import su.plo.voice.extension.expandMatching
-import su.plo.voice.extension.slibPlatform
-import java.net.URI
-
-val mainProject = project(":client:${file("../mainProject").readText().trim()}")
-val isMainProject = project == mainProject
-
 plugins {
+    id("net.fabricmc.fabric-loom") version "1.19.4"
+    alias(libs.plugins.shadow)
     kotlin("jvm")
-    id("gg.essential.multi-version")
-    id("gg.essential.defaults")
-    id("su.plo.voice.shadow")
-    alias(ft.plugins.relocate)
-}
-
-if (isMainProject) {
-    apply(plugin = "su.plo.crowdin.plugin")
 }
 
 group = "$group.client"
-base.archivesName.set("plasmovoice-${platform.loaderStr}-${platform.mcVersionStr}")
+base.archivesName.set("plasmovoice-fabric-26.3")
 
-loom.noServerRunConfigs()
+val minecraftVersion = "26.3"
+val fabricApiVersion = project.property("deps.fabric_api") as String
+val fabricPermissionsApiVersion = project.property("deps.fabric_permissions_api") as String
+val clothConfigVersion = project.property("deps.cloth_config") as String
+val modMenuVersion = project.property("deps.modmenu") as String
+val slibMcSlug = project.property("deps.slib") as String
+val slibVersion = libs.versions.slib.get()
+val slibArtifact = "$slibMcSlug-fabric"
+val mcVersionsRange = project.property("mod.minecraft_versions") as String
 
-// preprocessor's remap doesn't support 2.3.10+ kotlin
-configurations["remapKotlinCompilerClasspath"].resolutionStrategy
-    .force("org.jetbrains.kotlin:kotlin-compiler-embeddable:2.3.10")
-
-val mixins = mutableListOf("plasmovoice.mixins.json", "slib.mixins.json")
-
-preprocess {
-    keywords.putAll(
-        keywords.get() + mapOf(
-            ".fsh" to PreprocessTask.DEFAULT_KEYWORDS,
-            ".vsh" to PreprocessTask.DEFAULT_KEYWORDS,
-            ".json5" to PreprocessTask.DEFAULT_KEYWORDS,
-        )
-    )
-}
+val mixins = listOf("plasmovoice.mixins.json", "slib.mixins.json")
 
 loom {
     runs {
-        getByName("client") {
-            programArgs("--username", "GNOME__")
-            property("plasmovoice.debug", "true")
+        named("client") {
+            programArguments.addAll("--username", "GNOME__")
+            systemProperties.put("plasmovoice.debug", "true")
         }
     }
-}
-
-fletchingTable {
-    relocate.configure(sourceSets.main) {
-        matching("(*).json5") {
-            into("$1.json")
-            with(Json5ToJson(jsonIndent = "    "))
-        }
-    }
-}
-
-if (isMainProject) {
-    extensions.getByType<CrowdinParams>().apply {
-        url = URI.create("https://github.com/plasmoapp/plasmo-voice-crowdin/archive/refs/heads/pv.zip").toURL()
-        sourceFileName = "client.json"
-        resourceDir = "assets/plasmovoice/lang"
-        outputDir = layout.projectDirectory.file("../build/generated/sources/crowdin").asFile
-    }
-}
-
-val shadowCommon = configurations.create("shadowCommon")
-
-val macHelper = configurations.create("macHelper")
-val macHelperZip: String? = providers.gradleProperty("pv.mac.helperZip").orNull
-val buildMacHelperLocally = providers.gradleProperty("pv.mac.buildLocal").isPresent ||
-        org.gradle.internal.os.OperatingSystem.current().isMacOsX
-
-val mcVersionsRange = project.property("mod.minecraft_versions") as String
-val neoForgeVersionRange = project.findProperty("mod.neoforge_version") as String? ?: ""
-val fabricApiVersionRange = project.findProperty("mod.fabric_api_version") as String? ?: "*"
-
-fun slibArtifact(): String {
-    val mcSlug = project.findProperty("deps.slib") as String? ?: platform.mcVersionStr
-    return "$mcSlug-${platform.loaderStr}"
 }
 
 repositories {
@@ -94,80 +35,49 @@ repositories {
     maven("https://maven.shedaniel.me/")
     maven("https://maven.nucleoid.xyz/")
 
-    exclusiveContent {
-        forRepository {
-            maven("https://api.modrinth.com/maven")
-        }
-        filter {
-            includeGroup("maven.modrinth")
-        }
+    maven("https://api.modrinth.com/maven") {
+        content { includeGroup("maven.modrinth") }
     }
 
-    maven {
-        name = "Maven for PR #3403" // https://github.com/neoforged/NeoForge/pull/3403
-        url = uri("https://prmaven.neoforged.net/NeoForge/pr3403")
-        content {
-            includeModule("net.neoforged", "neoforge")
-            includeModule("net.neoforged", "testframework")
-        }
-    }
-
-    if (platform.mcVersion >= 260100) {
-        maven("https://repo.maven.apache.org/maven2/") {
-            name = "MavenCentralLWJGL"
-            content { includeGroup("org.lwjgl") }
-        }
+    maven("https://repo.maven.apache.org/maven2/") {
+        name = "MavenCentralLWJGL"
+        content { includeGroup("org.lwjgl") }
     }
 }
 
+val shadowCommon = configurations.create("shadowCommon")
+
 dependencies {
+    minecraft("com.mojang:minecraft:$minecraftVersion")
+    implementation("net.fabricmc:fabric-loader:0.20.1")
+
     compileOnly(libs.netty)
+
     implementation(libs.rnnoise.jni)
     implementation(libs.opus.jni)
     implementation(libs.opus.concentus)
 
-    if (platform.isFabric) {
-        val fabricApiVersion = project.property("deps.fabric_api") as String
-        val fabricPermissionsApiVersion = project.property("deps.fabric_permissions_api") as String
-        val clothConfigVersion = project.property("deps.cloth_config") as String
-        val modMenuVersion = project.property("deps.modmenu") as String
-
-        fun fabricApiModules(vararg module: String) {
-            module.forEach {
-                modImplementation(fabricApi.module("fabric-$it", fabricApiVersion))
-            }
-        }
-
-        fabricApiModules("rendering-v1", "networking-api-v1", "lifecycle-events-v1")
-
-        if (platform.mcVersion < 260100) {
-            fabricApiModules("key-binding-api-v1")
-        } else {
-            fabricApiModules("key-mapping-api-v1")
-        }
-
-        val coreProjectFile = project.file("../mainProject")
-        val coreProject = coreProjectFile.readText().trim()
-        if (coreProject == project.name) {
-            modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
-        }
-
-        val fabricPermissionsApi = "me.lucko:fabric-permissions-api:$fabricPermissionsApiVersion"
-        "include"(fabricPermissionsApi)
-        modImplementation(fabricPermissionsApi) {
-            isTransitive = false
-        }
-
-        modImplementation("me.shedaniel.cloth:cloth-config-fabric:$clothConfigVersion") {
-            exclude("net.fabricmc.fabric-api")
-        }
-
-        modImplementation("maven.modrinth:modmenu:$modMenuVersion")
-
-        if (platform.mcVersion < 12105) {
-            modCompileOnly("maven.modrinth:vulkanmod:0.5.5-fabric,1.21.1")
+    fun fabricApiModules(vararg module: String) {
+        module.forEach {
+            implementation(fabricApi.module("fabric-$it", fabricApiVersion))
         }
     }
+
+    fabricApiModules("rendering-v1", "networking-api-v1", "lifecycle-events-v1", "key-mapping-api-v1")
+
+    runtimeOnly("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
+
+    val fabricPermissionsApi = "me.lucko:fabric-permissions-api:$fabricPermissionsApiVersion"
+    "include"(fabricPermissionsApi)
+    implementation(fabricPermissionsApi) {
+        isTransitive = false
+    }
+
+    implementation("me.shedaniel.cloth:cloth-config-fabric:$clothConfigVersion") {
+        exclude("net.fabricmc.fabric-api")
+    }
+
+    implementation("maven.modrinth:modmenu:$modMenuVersion")
 
     val includedProjects = listOf(
         ":api:common",
@@ -188,23 +98,12 @@ dependencies {
 
     shadowCommon(libs.rnnoise.jni)
 
-    if (macHelperZip != null) {
-        macHelper(files(macHelperZip))
-    } else if (buildMacHelperLocally) {
-        macHelper(project(path = ":macos:helper", configuration = "macHelperBundle"))
+    api("su.plo.slib:$slibArtifact:$slibVersion") {
+        isTransitive = false
     }
-
-    // slib
-    slibPlatform(
-        slibArtifact(),
-        libs.versions.slib.get(),
-        { module, action ->
-            modApi(module) {
-                isTransitive = false
-                action.execute(this)
-            }
-        }
-    ) { name, action -> shadowCommon(name) { action.execute(this) } }
+    shadowCommon("su.plo.slib:$slibArtifact:$slibVersion") {
+        isTransitive = false
+    }
 }
 
 tasks {
@@ -213,18 +112,22 @@ tasks {
     }
 
     processResources {
-        from(macHelper) {
-            into("natives/macos")
-            rename { "helper.zip" }
+        inputs.property("version", version)
+        inputs.property("fabricApiVersion", fabricApiVersion)
+        inputs.property("mcVersions", mcVersionsRange)
+
+        filesMatching("fabric.mod.json") {
+            expand(
+                "version" to version,
+                "fabricDependencyName" to "fabric-api",
+                "fabricApiVersion" to "*",
+                "mcVersions" to mcVersionsRange,
+                "mixins" to mixins.joinToString(", ") { "\"$it\"" }.removeSurrounding("\""),
+            )
         }
 
-        if (platform.mcVersion >= 12102) {
-            exclude("assets/plasmovoice/shaders/core/*.json")
-        }
-
-        if (platform.mcVersion !in 12102..12104) {
-            exclude("assets/plasmovoice/shaders/*.json")
-        }
+        exclude("assets/plasmovoice/shaders/core/*.json")
+        exclude("assets/plasmovoice/shaders/*.json")
 
         filesMatching(listOf("**/*.vsh", "**/*.fsh")) {
             filter { line ->
@@ -232,82 +135,75 @@ tasks {
                 line.takeUnless { trimmed.startsWith("//#") || trimmed.startsWith("//$$") }
             }
         }
-
-        expandMatching(
-            listOf("META-INF/neoforge.mods.toml"),
-            "version" to version,
-            "neoForgeVersion" to neoForgeVersionRange,
-            "mcVersions" to mcVersionsRange,
-            "mixins" to mixins.joinToString("\n[[mixins]]\nconfig=") { "\"$it\"" }.removeSurrounding("\""),
-            "iconKey" to if (platform.mcVersion >= 260300) "iconFile" else "logoFile",
-        )
-
-        expandMatching(
-            listOf("fabric.mod.json"),
-            "version" to version,
-            "fabricDependencyName" to if (platform.mcVersion >= 260100) "fabric-api" else "fabric",
-            "fabricApiVersion" to fabricApiVersionRange,
-            "mcVersions" to mcVersionsRange,
-            "mixins" to mixins.joinToString(", ") { "\"$it\"" }.removeSurrounding("\""),
-        )
-
-        if (isMainProject) {
-            dependsOn("crowdinDownload")
-        } else {
-            dependsOn(mainProject.tasks.findByName("crowdinDownload") as Any)
-        }
-    }
-
-    if (isMainProject) {
-        findByName("preprocessResources")?.dependsOn("crowdinDownload")
-    } else {
-        findByName("preprocessResources")?.dependsOn(mainProject.tasks.findByName("crowdinDownload") as Any)
     }
 
     jar {
-        mergePlatformSpecifics()
-        excludeKotlinDefaultImpls()
+        archiveClassifier.set("dev")
+        exclude("assets/plasmovoice/shaders/core/*.json")
+        exclude("assets/plasmovoice/shaders/*.json")
     }
 
     shadowJar {
+        dependsOn(jar)
         configurations = listOf(shadowCommon)
+        archiveClassifier.set("")
 
-        if (platform.mcVersion >= 260100) {
-            exclude("fabric.mod.json")
-
-            rootSpec.from(zipTree(jar.get().archiveFile)) {
-                include("fabric.mod.json")
-                include("META-INF/jars/**")
-            }
+        exclude("fabric.mod.json")
+        rootSpec.from(sourceSets.main.get().output) {
+            include("fabric.mod.json")
+        }
+        rootSpec.from(project.tasks.named("processIncludeJars")) {
+            into("META-INF/jars")
         }
 
+        mergeServiceFiles()
+
+        relocate("gg.essential.universal", "su.plo.voice.universal")
+        relocate("kotlin", "su.plo.voice.libs.kotlin")
+        relocate("kotlinx.coroutines", "su.plo.voice.libs.kotlinx.coroutines")
+        relocate("kotlinx.serialization", "su.plo.voice.libs.kotlinx.serialization")
+        relocate("com.ensarsarajcic.kotlinx", "su.plo.voice.libs.msgpack")
+        relocate("org.concentus", "su.plo.voice.libs.concentus")
+        relocate("at.favre.lib.hkdf", "su.plo.voice.libs.hkdf")
+        relocate("dev.apehum.mcdsl", "su.plo.voice.libs.mcdsl")
+        relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
+        relocate("org.bstats", "su.plo.voice.libs.bstats")
+
+        exclude("DebugProbesKt.bin")
+        exclude("_COROUTINE/**")
+        exclude("LICENSE*")
+        exclude("README.md")
+        exclude("**/*.kotlin_metadata")
+        exclude("**/*.kotlin_module")
+        exclude("**/*.kotlin_builtins")
+        exclude("pack.mcmeta")
+        exclude("META-INF/neoforge.mods.toml")
+
         dependencies {
-            relocate("gg.essential.universal", "su.plo.voice.universal")
-
+            exclude(dependency("net.java.dev.jna:jna"))
+            exclude(dependency("org.jetbrains:annotations"))
+            exclude(dependency("org.projectlombok:lombok"))
+            exclude(dependency("com.google.guava:guava"))
+            exclude(dependency("com.google.guava:failureaccess"))
+            exclude(dependency("com.google.guava:listenablefuture"))
+            exclude(dependency("com.google.code.gson:gson"))
+            exclude(dependency("com.google.code.findbugs:jsr305"))
+            exclude(dependency("com.google.errorprone:error_prone_annotations"))
+            exclude(dependency("com.google.j2objc:j2objc-annotations"))
+            exclude(dependency("it.unimi.dsi:fastutil"))
+            exclude(dependency("org.checkerframework:checker-qual"))
+            exclude(dependency("com.mojang:brigadier"))
             exclude(dependency("org.slf4j:slf4j-api"))
-
-            if (platform.isNeoForge) {
-                exclude("fabric.mod.json")
-            } else {
-                exclude("pack.mcmeta")
-                exclude("META-INF/neoforge.mods.toml")
-            }
         }
     }
 
-    if (platform.mcVersion < 260100) {
-        val remapJar = named<RemapJarTask>("remapJar") {
-            dependsOn(shadowJar)
-            inputFile.set(shadowJar.get().archiveFile)
-            archiveClassifier.set("remapped")
-        }
+    build {
+        dependsOn(shadowJar)
+    }
 
-        named("copyJarToRootProject") {
-            dependsOn(remapJar)
-        }
-    } else {
-        named("copyJarToRootProject") {
-            dependsOn(shadowJar)
-        }
+    register<Copy>("copyJarToRootProject") {
+        dependsOn(shadowJar)
+        from(shadowJar.get().archiveFile)
+        into(rootProject.layout.buildDirectory.dir("libs"))
     }
 }

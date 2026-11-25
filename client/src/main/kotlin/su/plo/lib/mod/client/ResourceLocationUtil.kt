@@ -1,29 +1,29 @@
 package su.plo.lib.mod.client
 
-import net.minecraft.ResourceLocationException
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.IdentifierException
+import net.minecraft.resources.Identifier
 
 object ResourceLocationUtil {
     @JvmStatic
     fun tryBuild(
         namespace: String,
         location: String,
-    ): ResourceLocation? =
-        ResourceLocation.tryBuild(namespace, location)
+    ): Identifier? =
+        Identifier.tryBuild(namespace, location)
 
     @JvmStatic
-    @Throws(ResourceLocationException::class)
+    @Throws(IdentifierException::class)
     fun build(
         namespace: String,
         location: String,
-    ): ResourceLocation =
-    ResourceLocation.fromNamespaceAndPath(namespace, location)
+    ): Identifier =
+    Identifier.fromNamespaceAndPath(namespace, location)
 
     @JvmStatic
-    @Throws(ResourceLocationException::class)
-    fun parse(location: String): ResourceLocation =
-        ResourceLocation.parse(location)
+    @Throws(IdentifierException::class)
+    fun parse(location: String): Identifier =
+        Identifier.parse(location)
 
     @JvmStatic
-    fun mod(location: String): ResourceLocation = tryBuild("plasmovoice", location)!!
+    fun mod(location: String): Identifier = tryBuild("plasmovoice", location)!!
 }

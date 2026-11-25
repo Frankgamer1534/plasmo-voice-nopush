@@ -1,83 +1,30 @@
-import org.gradle.kotlin.dsl.support.listFilesOrdered
-
-dependencyResolutionManagement {
-    repositories {
-        maven("https://maven.kikugie.dev/snapshots")
-    }
-
-    versionCatalogs {
-        create("ft") { from("dev.kikugie.fletching-table:fletching-table.catalog:0.2-SNAPSHOT") }
-    }
-}
-
 pluginManagement {
-    includeBuild("build-logic")
-
     repositories {
         gradlePluginPortal()
-        mavenLocal()
         mavenCentral()
-        google()
-
-        maven("https://jitpack.io/")
-        maven("https://maven.fabricmc.net")
-
-        maven("https://maven.architectury.dev/")
-        maven("https://repo.essential.gg/repository/maven-public")
-        maven("https://maven.minecraftforge.net")
+        maven("https://maven.fabricmc.net/")
         maven("https://repo.plasmoverse.com/releases")
         maven("https://repo.plasmoverse.com/snapshots")
-        maven("https://maven.kikugie.dev/snapshots")
-    }
-
-    plugins {
-        val egtVersion = "0.8.6-SNAPSHOT"
-        id("gg.essential.defaults") version egtVersion
-        id("gg.essential.multi-version.root") version egtVersion
+        maven("https://jitpack.io/")
     }
 }
 
 plugins {
-    id("su.plo.voice.client-projects")
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 rootProject.name = "PlasmoVoice"
 
-// Protocol
 include("protocol")
 
-// API
-file("api").listFilesOrdered {
-    return@listFilesOrdered it.isDirectory && it.name != "build"
-}.forEach {
-    include("api:${it.name}")
-}
+include("api:common")
+include("api:client")
+include("api:server")
+include("api:server-proxy-common")
 
-// Common
 include("common")
-
-// Server-Proxy Common (Module for common code between server and proxy implementations)
 include("server-proxy-common")
-
-// Server
-file("server").listFilesOrdered {
-    return@listFilesOrdered it.isDirectory && it.name != "build"
-}.forEach { file ->
-    include("server:${file.name}")
-
-    file.listFilesOrdered { it.isDirectory && it.name == "api" }
-        .forEach { _ -> include("server:${file.name}:api") }
-}
-
-// Proxy
-file("proxy").listFilesOrdered {
-    return@listFilesOrdered it.isDirectory && it.name != "build"
-}.forEach {
-    include("proxy:${it.name}")
-}
-
-// macOS microphone helper
+include("server:common")
 include("macos:protocol")
-include("macos:helper")
-include("macos:probe")
+
+include("client")
